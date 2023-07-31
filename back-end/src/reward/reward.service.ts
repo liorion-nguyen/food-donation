@@ -9,10 +9,27 @@ export class RewardService {
         @InjectModel(Reward.name) private rewardModel: mongoose.Model<Reward>,
     ) { }
 
-    async getAllReward(): Promise<Reward[]> {
-        const reward = await this.rewardModel.find();
-        return reward;
-    }
+    async getNumberReward(pageOption: {
+        page?: number,
+        show?: number,
+      }): Promise<{ data: Reward[], count: number }> {
+        const limit = pageOption?.show;
+        const skip = (pageOption?.page - 1) * pageOption?.show;
+        const sortOptions: any = {};
+        sortOptions.updatedAt = -1; 
+        const rewards = await this.rewardModel.find().skip(skip).limit(limit).sort(sortOptions).exec();
+      
+        if (!rewards || rewards.length === 0) {
+          throw new NotFoundException('No rewards found in the requested page.');
+        }
+      
+        const totalCount = await this.rewardModel.countDocuments(); // Lấy tổng số lượng bản ghi trong collection
+      
+        return {
+          data: rewards,
+          count: totalCount,
+        };
+      }
 
     async getReward(id: string): Promise<Reward> {
         const reward= await this.rewardModel.findById(id);

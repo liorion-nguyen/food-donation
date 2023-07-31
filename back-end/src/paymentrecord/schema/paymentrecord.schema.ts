@@ -5,16 +5,28 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 })
 export class Paymentrecord {
     @Prop()
-    event: string;
+    title: string;
 
     @Prop()
-    imgEvent: string;
+    imgTitle: string;
 
     @Prop()
-    moneyUsed: string;
+    MoneyUsed: number;
 
     @Prop()
-    usedDate: string;
+    type: string;
+
+    @Prop()
+    location: string;
+
+    @Prop()
+    address: string;
+
+    @Prop()
+    description: string;
+
+    @Prop()
+    releaseDate: string;
 
     @Prop()
     status: string;

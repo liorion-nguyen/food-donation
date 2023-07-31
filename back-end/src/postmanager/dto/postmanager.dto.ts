@@ -11,11 +11,27 @@ export class PostmanagerDto {
 
     @IsString()
     @IsNotEmpty()
-    releaseDate: string;
+    rasing: number;
 
     @IsString()
     @IsNotEmpty()
-    view: string;
+    type: string;
+
+    @IsString()
+    @IsNotEmpty()
+    location: string;
+
+    @IsString()
+    @IsNotEmpty()
+    address: string;
+
+    @IsString()
+    @IsNotEmpty()
+    description: string;
+
+    @IsString()
+    @IsNotEmpty()
+    releaseDate: string;
 
     @IsString()
     @IsNotEmpty()

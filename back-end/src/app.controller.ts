@@ -10,3 +10,5 @@ export class AppController {
     return this.appService.getHello();
   }
 }
+
+// Xử lý các request từ client và trả về response tương ứng

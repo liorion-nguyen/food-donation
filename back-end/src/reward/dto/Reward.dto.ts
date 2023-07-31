@@ -7,15 +7,23 @@ export class RewardDto {
 
     @IsString()
     @IsNotEmpty()
-    Information: string;
+    VoucherName: string;
 
     @IsString()
     @IsNotEmpty()
-    expiredDate: string;
+    VoucherCode: number;
 
     @IsString()
     @IsNotEmpty()
-    activeDate: string;
+    ExpiredDate: string;
+
+    @IsString()
+    @IsNotEmpty()
+    Description: string;
+
+    @IsString()
+    @IsNotEmpty()
+    releaseDate: string;
 
     @IsString()
     @IsNotEmpty()

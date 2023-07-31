@@ -11,11 +11,23 @@ export class Postmanager {
     title: string;
 
     @Prop()
-    releaseDate: string;
+    rasing: number;
 
     @Prop()
-    view: string;
+    type: string;
+
+    @Prop()
+    location: string;
+
+    @Prop()
+    address: string;
     
+    @Prop()
+    description: string;
+
+    @Prop()
+    releaseDate: string;
+
     @Prop()
     status: string;
 }
