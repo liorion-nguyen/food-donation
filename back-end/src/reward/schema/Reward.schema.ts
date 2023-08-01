@@ -8,14 +8,20 @@ export class Reward {
     imgInformation: string;
 
     @Prop()
-    Information: string;
+    VoucherName: string;
 
     @Prop()
-    expiredDate: string;
+    VoucherCode: number;
 
     @Prop()
-    activeDate: string;
-    
+    ExpiredDate: string;
+
+    @Prop()
+    Description: string;
+
+    @Prop()
+    releaseDate: string;
+
     @Prop()
     status: string;
 }

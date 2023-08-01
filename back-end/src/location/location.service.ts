@@ -9,10 +9,29 @@ export class LocationService {
         @InjectModel(Location.name) private locationModel: mongoose.Model<Location>,
     ) { }
 
-    async getAllLocation(): Promise<Location[]> {
-        const locations = await this.locationModel.find();
-        return locations;
-    }
+    async getNumberLocation(pageOption: {
+        page?: number,
+        show?: number,
+      }): Promise<{ data: Location[], count: number }> {
+        const limit = pageOption?.show;
+        const skip = (pageOption?.page - 1) * pageOption?.show;
+        const sortOptions: any = {};
+        sortOptions.updatedAt = -1; 
+      
+        const locations = await this.locationModel.find().skip(skip).limit(limit).sort(sortOptions).exec();
+      
+        if (!locations || locations.length === 0) {
+          throw new NotFoundException('No locations found in the requested page.');
+        }
+      
+        const totalCount = await this.locationModel.countDocuments(); // Lấy tổng số lượng bản ghi trong collection
+      
+        return {
+          data: locations,
+          count: totalCount,
+        };
+      }
+      
 
     async getLocation(id: string): Promise<Location> {
         const location = await this.locationModel.findById(id);

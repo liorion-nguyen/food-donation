@@ -3,19 +3,35 @@ import { IsString, IsNotEmpty } from "class-validator";
 export class PaymentrecordDto {
     @IsString()
     @IsNotEmpty()
-    event: string;
+    title: string;
 
     @IsString()
     @IsNotEmpty()
-    imgEvent: string;
+    imgTitle: string;
 
     @IsString()
     @IsNotEmpty()
-    moneyUsed: string;
+    MoneyUsed: number;
 
     @IsString()
     @IsNotEmpty()
-    usedDate: string;
+    type: string;
+
+    @IsString()
+    @IsNotEmpty()
+    location: string;
+
+    @IsString()
+    @IsNotEmpty()
+    address: string;
+
+    @IsString()
+    @IsNotEmpty()
+    description: string;
+
+    @IsString()
+    @IsNotEmpty()
+    releaseDate: string;
 
     @IsString()
     @IsNotEmpty()

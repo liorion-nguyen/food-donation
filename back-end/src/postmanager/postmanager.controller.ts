@@ -1,23 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { PostmanagerService } from './postmanager.service';
 import { Postmanager } from './schemas/postmanager.schema';
 import { PostmanagerDto } from './dto/postmanager.dto';
 
 @Controller('postmanagers')
 export class PostmanagerController {
-    constructor(private postmanagerService: PostmanagerService) {}
+    constructor(private postmanagerService: PostmanagerService) { }
 
     @Get()
-    async getAllPostmanager(): Promise<Postmanager[]> {
-        return this.postmanagerService.getAllPostmanager();
+    async getNumberPostmanager(
+        @Query() pageOption: {
+            page?: number,
+            show?: number,
+        }
+    ): Promise<{ data: Postmanager[], count: number }> {
+        if (pageOption.page && pageOption.page < 1) {
+            throw new BadRequestException('Invalid page number. Page number must be greater than or equal to 1.');
+        }
+        return this.postmanagerService.getNumberPostmanager(pageOption);
     }
 
-    @Post() 
+    @Post()
     async createPostmanager(@Body() postmanager: PostmanagerDto): Promise<Postmanager> {
         return this.postmanagerService.createPostmanager(postmanager);
     }
 
-    @Put(':id') 
+    @Put(':id')
     async update(
         @Param('id')
         id: string,

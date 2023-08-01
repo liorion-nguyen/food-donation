@@ -10,7 +10,6 @@ import { PostmanagerModule } from './postmanager/postmanager.module';
 import { RewardModule } from './reward/reward.module';
 import { PaymentrecordModule } from './paymentrecord/paymentrecord.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,4 +27,7 @@ import { PaymentrecordModule } from './paymentrecord/paymentrecord.module';
   controllers: [AppController],
   providers: [AppService],
 })
+
 export class AppModule {}
+
+// Module gốc, quản lý các thành phần khác của ứng dụng như controller, service hoặc import.
