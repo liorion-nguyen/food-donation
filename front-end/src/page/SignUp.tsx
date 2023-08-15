@@ -12,6 +12,8 @@ import { createUsers } from "../API/user/user.api";
 
 import navLeft from "../Images/sign/sign-up/SignUp_NavLeft.png"
 import iconWorld from "../Images/sign/sign-up/SignUp_IconWorld.svg"
+import { StyleImgWolrd } from "../StyleComponent/Sign";
+import { VeriCode, getMail } from "../API/emailVerification/emailVerification.api";
 
 const Cookies = require('js-cookie');
 
@@ -33,8 +35,8 @@ export default function SignUp() {
         password: '',
         name: '',
     })
+    const [email, setEmail] = useState("");
     const [color, setColor] = useState(true)
-    const [vertifyOTP, setVertifyOTP] = useState("123456")
 
     const [step, setStep] = useState(1)
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -47,42 +49,46 @@ export default function SignUp() {
     const [height, setHeight] = useState(document.documentElement.scrollHeight)
     const Nextstep = () => {
         setLoading(true)
+
         setTimeout(() => {
-            inputPhone.length === 11 && otp.length === 0 ? setStep(2) : (
+            email.length > 6 && otp.length === 0 ? setStep(2) : (
                 otp.length === 6 ? setStep(3) : setStep(1)
             )
             setLoading(false)
         }, Math.random() * 1000)
     }
-    const handleButton = () => {
+    const handleButton = async () => {
         switch (step) {
             case 1:
-                Nextstep()
+                setLoading(true)
+                await getMail(email);
+                setLoading(false);
+                setStep(2);
                 break;
+
             case 2:
-                if (vertifyOTP === otp) {
+                setLoading(true)
+                const vertifyOTP = await VeriCode(otp)
+                if (vertifyOTP) {
                     setContentAlert("Verify Correct!");
                     setColor(true)
                     handleClick();
-                    Nextstep();
+                    setStep(3)
                 }
                 else {
                     setContentAlert("Incorrect!");
                     handleClick();
                     setColor(false)
-                    setLoading(true)
-                    setTimeout(() => {
-                        setOtp("")
-                        setLoading(false)
-                    }, Math.random() * 1000)
                 }
-                break;
+                setLoading(false);
 
+                break;
             case 3:
-                handleValidation();
+                await handleValidation();
                 break;
 
         }
+
     }
 
     const [open, setOpen] = useState(false);
@@ -94,11 +100,11 @@ export default function SignUp() {
 
     const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
-    
+
         setOpen(false);
-      };
+    };
 
     const action = (
         <React.Fragment>
@@ -129,7 +135,9 @@ export default function SignUp() {
             if (name.trim().split(" ").length < 2 && /[^\w\s]/.test(name) === false) {
                 setColor(true);
                 createUsers({
-                    phone: `${firstPhone} ${inputPhone}`,
+                    isAdmin: false,
+                    orgId: 1,
+                    contact: email,
                     password: password,
                     username: name,
                 })
@@ -167,12 +175,19 @@ export default function SignUp() {
             <Box sx={{ flexGrow: 1 }}
                 style={{
                     display: 'flex',
-                    height: `${height}px`
+                    height: '100vh',
                 }}
 
             >
                 <Grid container spacing={2} >
-                    <Grid item xs={8}>
+                    <Grid item md={7}
+                        sx={{
+                            display: {
+                                xs: 'none',
+                                md: 'block',
+                            }
+                        }}
+                    >
                         <Box
                             style={{
                                 width: '100%',
@@ -187,16 +202,22 @@ export default function SignUp() {
                             />
                         </Box>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} md={5}>
                         <Box
-                            style={{
-                                width: '70%',
-                                height: `${height * 0.8}px`,
+                            sx={{
+                                height: '80vh',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 justifyContent: 'space-around',
-                                padding: `${height * 0.1}px 15%`,
+                                width: {
+                                    xs: '90%',
+                                    md: '70%',
+                                },
+                                padding: {
+                                    xs: `${height * 0.1}px 5%`,
+                                    md: `${height * 0.1}px 15%`,
+                                },
                             }}
                         >
                             <ThemeProvider theme={theme}>
@@ -207,16 +228,13 @@ export default function SignUp() {
                                         fontWeight: '700',
                                         lineHeight: '38px',
                                         color: '#2BA84A',
+                                        textAlign: 'center',
                                     }}
                                 >Welcome to StartNow</Typography>
                             </ThemeProvider>
-                            <img src={iconWorld}
-                                style={{
-                                    width: '100%'
-                                }}
-                            />
+                            <StyleImgWolrd src={iconWorld}></StyleImgWolrd>
 
-                            <Box
+                            {/* <Box
                                 style={{
                                     width: '100%',
                                     display: step === 1 ? 'block' : 'none'
@@ -334,6 +352,56 @@ export default function SignUp() {
                                         />
                                     </Grid>
                                 </Grid>
+                            </Box> */}
+
+                            <Box
+                                style={{
+                                    width: '100%',
+                                    display: step === 1 ? 'block' : 'none'
+                                }}
+                            >
+                                <Box
+                                    style={{
+                                        width: '100%',
+                                        marginBottom: '20px'
+                                    }}
+                                >
+                                    <p
+                                        style={{
+                                            fontFamily: 'SF Pro',
+                                            fontStyle: 'normal',
+                                            fontWeight: '700',
+                                            fontSize: '20px',
+                                            lineHeight: '30px',
+                                            color: '#141416',
+                                            margin: '0 0 7px 0',
+                                        }}
+                                    >Enter your mail</p>
+                                    <p
+                                        style={{
+                                            fontFamily: 'SF Pro',
+                                            fontStyle: 'normal',
+                                            fontWeight: '400',
+                                            fontSize: '15px',
+                                            lineHeight: '24px',
+                                            margin: '0',
+                                            color: '#67686b',
+                                        }}
+                                    >Please enter your email to join our community</p>
+                                </Box>
+
+                                <TextField
+                                    label="Enter your email to sign up"
+                                    multiline
+                                    maxRows={1}
+                                    variant="filled"
+                                    sx={{
+                                        width: '100%',
+                                    }}
+                                    onChange={(e: any) => {
+                                        setEmail(e.target.value)
+                                    }}
+                                />
                             </Box>
 
                             <Box
@@ -368,7 +436,7 @@ export default function SignUp() {
                                             margin: '0',
                                             color: '#67686b',
                                         }}
-                                    >{`A verification codes has been sent to (+${firstPhone}) ${inputPhone}`}</p>
+                                    >{`A verification codes has been sent to ${email}`}</p>
                                 </Box>
 
                                 <Box
@@ -385,6 +453,12 @@ export default function SignUp() {
                                                 border: '1px solid #2BA84A',
                                                 borderRadius: '4px',
                                                 backgroundColor: '#F4F5F6',
+                                                padding: {
+                                                    xs: '8px 0',
+                                                    sm: '10px 0',
+                                                    md: '14px 0',
+                                                },
+
                                             }
                                         }}
                                     />
@@ -438,15 +512,19 @@ export default function SignUp() {
 
 
                             <Button variant="contained"
-                                style={{
+                                sx={{
                                     width: '100%',
                                     height: '56px',
                                     background: (inputPhone.length === 11 && step === 1) || (otp.length === 6 && step === 2) || (fillInfo1 && fillInfo2) ? '#2BA84A' : '#777E91',
                                     borderRadius: '4px',
+                                    margin: {
+                                        xs: '0',
+                                        sm: '10px 0',
+                                    }
                                 }}
                                 onClick={handleButton}
                             >
-                                {((inputPhone.length === 11 && step === 1) || (otp.length === 6 && step === 2) || (fillInfo1 && fillInfo2)) && loading ? <CircularProgress
+                                {((email.length > 6 && step === 1) || (otp.length === 6 && step === 2) || (fillInfo1 && fillInfo2)) && loading ? <CircularProgress
                                     style={{
                                         color: 'white',
                                         scale: '0.7'
@@ -459,7 +537,6 @@ export default function SignUp() {
                                     fontFamily: 'Inter',
                                     fontStyle: 'normal',
                                     fontSize: '15px',
-                                    marginTop: '-15px'
                                 }}
                             >
                                 <a

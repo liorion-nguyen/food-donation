@@ -7,7 +7,6 @@ import { DialogHomeActions } from '../store/DialogHome';
 import { createPaymentrecords, updatePaymentrecords } from '../API/paymentrecord/paymentrecord.api';
 import { DataHomeActions } from '../store/DataHome';
 import { alertActions } from '../store/alert';
-import { IConFormatText } from '../StyleComponentMui';
 import { useDispatch, useSelector } from 'react-redux';
 
 import FormatListTich from '../Images/description/FormatListTich.svg';
@@ -25,6 +24,8 @@ import IconPicture from '../Images/add-post/IconPicture.svg';
 import IconEye from '../Images/add-post/IconEye.svg'
 import IconDelete from '../Images/add-post/IconDelete.svg';
 import { LoadingActions } from '../store/loading';
+import { IConFormatText } from '../StyleComponent/Post';
+
 
 
 export default function Paymentrecord() {
@@ -47,8 +48,11 @@ export default function Paymentrecord() {
 
     const getDate = () => {
         const date = new Date();
-
-        const time = `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+        const time = `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        })}`;
         return time;
     };
 
@@ -169,7 +173,7 @@ export default function Paymentrecord() {
                 dispatch(DialogHomeActions.handleAdd());
                 setLoading(false)
                 setSelectedFile(null);
-            }, 2000)
+            }, 500)
         }
         else {
             dispatch(alertActions.showAlert());

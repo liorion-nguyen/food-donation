@@ -1,6 +1,6 @@
 import { Box, Button, Grid } from "@mui/material";
 import PlaceIcon from '@mui/icons-material/Place';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { DialogHomeActions } from "../store/DialogHome";
 
@@ -11,6 +11,9 @@ import Donation from "../Images/home/main/Donation.svg";
 
 export default function ElementOverview() {
     const dispatch = useDispatch();
+    const user = useSelector((state: any) => state.dataHome.User)
+    
+
     const ListOverViews = [
         {
             title: 'Add a new post',
@@ -37,6 +40,8 @@ export default function ElementOverview() {
             button: 'Add new payment record'
         }
     ]
+
+
     return (
         <Box
             style={{
@@ -54,7 +59,7 @@ export default function ElementOverview() {
                         color: '#141416',
                         margin: '0'
                     }}
-                >Welcome back, Milly Nguyen</h3>
+                >{`Welcome back, ${user.username}`}</h3>
                 <Box
                     style={{
                         display: 'flex',
@@ -96,12 +101,12 @@ export default function ElementOverview() {
                                 >
                                     <Box
                                         style={{
-                                            height: '50px'
+                                            height: '30px'
                                         }}
                                     >
                                         <img src={ListOverView.icon}
                                             style={{
-                                                width: '5%',
+                                                width: '30px',
                                             }} alt="error"
                                         />
                                     </Box>
@@ -111,6 +116,9 @@ export default function ElementOverview() {
                                             fontSize: '20px',
                                             lineHeight: '32px',
                                             margin: '15px 0 10px 0',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
                                         }}
                                     >{ListOverView.title}</h4>
                                     <p
@@ -119,9 +127,12 @@ export default function ElementOverview() {
                                             fontStyle: 'normal',
                                             fontWeight: '400',
                                             fontSize: '13px',
-                                            lineHeight: '150%',
                                             color: '#353945',
-                                            margin: '0 0 20px 0'
+                                            margin: '0 0 20px 0',
+                                            maxHeight: '4.5em',
+                                            lineHeight: 1.5,
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
                                         }}
                                     >{ListOverView.note}</p>
                                     <Button variant="contained" color="success"
@@ -131,7 +142,10 @@ export default function ElementOverview() {
                                             width: '100%',
                                             height: '40px',
                                             fontWeight: 600,
-                                            fontSize: '16px',
+                                            fontSize: {
+                                                xs: '14px',
+                                                md: '16px',
+                                            },
                                             lineHeight: '24px',
                                         }}
                                         onClick={() => {

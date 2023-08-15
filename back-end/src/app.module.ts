@@ -9,6 +9,11 @@ import { LocationModule } from './location/location.module';
 import { PostmanagerModule } from './postmanager/postmanager.module';
 import { RewardModule } from './reward/reward.module';
 import { PaymentrecordModule } from './paymentrecord/paymentrecord.module';
+import { DecryptAccesstokenModule } from './decrypt-accesstoken/decrypt-accesstoken.module';
+import { ConfirmEmailModule } from './confirm-email/confirm-email.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AbilityModule } from './user/ability/ability.module';
+import { AbilitiesGuard } from './user/ability/ability.guard';
 
 @Module({
   imports: [
@@ -22,12 +27,20 @@ import { PaymentrecordModule } from './paymentrecord/paymentrecord.module';
     LocationModule,
     PostmanagerModule,
     RewardModule,
-    PaymentrecordModule
+    PaymentrecordModule,
+    DecryptAccesstokenModule,
+    ConfirmEmailModule,
+    AbilityModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AbilitiesGuard,
+    }],
+
 })
 
-export class AppModule {}
+export class AppModule { }
 
 // Module gốc, quản lý các thành phần khác của ứng dụng như controller, service hoặc import.

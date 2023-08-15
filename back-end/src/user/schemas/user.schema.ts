@@ -1,18 +1,23 @@
-/* eslint-disable prettier/prettier */
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 @Schema({
   timestamps: true,
 })
+
 export class User {
-  @Prop()
+  @Prop({ required: true })
   username: string;
 
-  @Prop()
+  @Prop({ required: true })
   password: string;
 
-  @Prop()
-  phone: string;
+  @Prop({ required: true })
+  contact: string;
+
+  @Prop({ required: true })
+  isAdmin: boolean;
+
+  @Prop({ required: true })
+  orgId: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

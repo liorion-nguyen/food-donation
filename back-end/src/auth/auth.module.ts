@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './contant/contants';
 import { LocalStrategy } from './strategy/jwt.stategy';
 
 @Module({
@@ -13,7 +12,7 @@ import { LocalStrategy } from './strategy/jwt.stategy';
     PassportModule,
     JwtModule.register({
       global: true,
-      secret: jwtConstants.secret,
+      secret: 'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
       signOptions: {  expiresIn: '604800s' },
     }),
   ],

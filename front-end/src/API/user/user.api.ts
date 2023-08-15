@@ -1,14 +1,5 @@
 import axios from 'axios';
-
-export const getUsers = async () => {
-    const data = await axios({
-        method: 'get',
-        url: 'http://localhost:8000/users',
-    })
-        .then(res => res.data);
-    return data;
-};
-
+import { request } from '../request';
 export const createUsers = async (content: any) => {
     const data = await axios({
         method: 'post',
@@ -28,3 +19,12 @@ export const CheckLogin = async (content: any) => {
         .then(res => res.data);
     return data;
 };
+
+export const getUsers = async (page: number, show: number) => {
+    const data = await request('get', '', `users?page=${page}&show=${show}`)
+    return data;
+};
+
+
+  
+

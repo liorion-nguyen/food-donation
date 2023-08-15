@@ -23,8 +23,8 @@ export class AuthService {
             password,
             user.password,
         );
-        
-        
+
+
         if (user && hash === true) {
             const { password, username, ...rest } =
                 user;
@@ -37,7 +37,7 @@ export class AuthService {
                 await this.jwtService.signAsync(
                     rest._doc,
                 );
-
+                    
             return {
                 accessToken,
                 user: rest._doc,

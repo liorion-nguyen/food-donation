@@ -4,7 +4,6 @@ import { useState } from 'react';
 import firebase from "firebase/compat/app";
 import 'firebase/compat/firestore';
 import { DialogHomeActions } from '../store/DialogHome';
-import { IConFormatText } from '../StyleComponentMui';
 import { alertActions } from '../store/alert';
 import { DataHomeActions } from '../store/DataHome';
 import { createPostmanagers, updatePostmanagers } from '../API/postmanager/postmanager.api';
@@ -24,6 +23,7 @@ import IconPicture from '../Images/add-post/IconPicture.svg';
 import IconEye from '../Images/add-post/IconEye.svg'
 import IconDelete from '../Images/add-post/IconDelete.svg';
 import { LoadingActions } from '../store/loading';
+import { IConFormatText } from '../StyleComponent/Post';
 
 export default function Postmanager() {
     const postmanagers = useSelector((state: any) => state.dialog.data)
@@ -45,7 +45,11 @@ export default function Postmanager() {
     const getDate = () => {
         const date = new Date();
 
-        const time = `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+        const time = `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })}`;
         return time;
     };
 
@@ -131,7 +135,7 @@ export default function Postmanager() {
                                 releaseDate: getDate(),
                                 status: 'Online'
                             })
-                            dispatch(DataHomeActions.getPaymentrecord());
+                            dispatch(DataHomeActions.getPostmanager());
                         }
                     );
                 }
@@ -149,7 +153,7 @@ export default function Postmanager() {
                             releaseDate: getDate(),
                             status: 'Online'
                         })
-                        dispatch(DataHomeActions.getPaymentrecord());
+                        dispatch(DataHomeActions.getPostmanager());
                     }
                     update();
                 }
@@ -168,7 +172,7 @@ export default function Postmanager() {
                 dispatch(DialogHomeActions.handleAdd());
                 setLoading(false)
                 setSelectedFile(null);
-            }, 2000)
+            }, 500)
         }
         else {
             dispatch(alertActions.showAlert());

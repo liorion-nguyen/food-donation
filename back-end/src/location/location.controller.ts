@@ -9,11 +9,14 @@ import {
   BadRequestException,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { Location } from './schemas/location.schema';
 import { UpdateLocationDto } from './dto/update-location.dto';
 import { CreateLocationDto } from './dto/create-location.dto';
+import { AbilitiesGuard } from 'src/user/ability/ability.guard';
+import { CheckAbilities, ReadUserAbility } from 'src/user/ability/abilities.decorator';
 
 @Controller('locations')
 export class LocationController {
@@ -34,11 +37,15 @@ export class LocationController {
 
 
   @Post()
+  @UseGuards(AbilitiesGuard)
+  @CheckAbilities(new ReadUserAbility())
   async createLocation(@Body() location: CreateLocationDto): Promise<Location> {
     return this.locationService.createLocation(location);
   }
 
   @Put(':id')
+  @UseGuards(AbilitiesGuard)
+  @CheckAbilities(new ReadUserAbility())
   async update(
     @Param('id')
     id: string,
@@ -48,6 +55,8 @@ export class LocationController {
   }
 
   @Delete(':id')
+  @UseGuards(AbilitiesGuard)
+  @CheckAbilities(new ReadUserAbility())
   async deleteLocation(
     @Param('id')
     id: string,

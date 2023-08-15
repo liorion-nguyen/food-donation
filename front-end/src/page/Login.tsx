@@ -12,6 +12,7 @@ import { CheckLogin } from '../API/user/user.api';
 
 import Logo from '../Images/home/main/Logo.svg';
 import navLeft from '../Images/sign/sign-up/SignUp_NavLeft.png';
+import { decodedAT } from '../API/decodedAccessToken/decodedAccessToken.api';
 
 const Cookies = require('js-cookie');
 interface AccountUser {
@@ -22,11 +23,24 @@ interface AccountUser {
 const Login: React.FC = () => {
     const usernameInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+
     useEffect(() => {
-        if (Cookies.get('jwt') || Cookies.get('jwt') !== undefined) {
-            navigate('/');
+        const decoded = async () => {
+            const encode = Cookies.get('jwt') || "liorion";
+            
+            const user = await decodedAT(encode)
+            
+
+            if (user.error === "Invalid Access Token") {
+                Cookies.remove('jwt');
+            }
+            else {
+                navigate('/');
+            }
         }
+        decoded();
     }, [Cookies.get('jwt')])
+
     const dispatch = useDispatch();
     const alert = useSelector((state: any) => state.alert)
 
@@ -42,6 +56,7 @@ const Login: React.FC = () => {
                     username: accountUser.username,
                     password: accountUser.password,
                 });
+
                 dispatch(alertActions.showAlert());
                 dispatch(alertActions.setColorGreen());
                 dispatch(alertActions.setContentAlert('Đăng nhập thành công'));
@@ -64,7 +79,7 @@ const Login: React.FC = () => {
         usernameInputRef.current?.focus();
     };
 
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(true);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -72,9 +87,16 @@ const Login: React.FC = () => {
         event.preventDefault();
     };
     return (
-        <Box style={{ height: `${height}px` }}>
+        <Box style={{ height: '100vh' }}>
             <Grid container>
-                <Grid item xs={8}>
+                <Grid item md={7}
+                    sx={{
+                        display: {
+                            xs: 'none',
+                            md: 'block'
+                        }
+                    }}
+                >
                     <img
                         src={navLeft}
                         style={{
@@ -83,16 +105,22 @@ const Login: React.FC = () => {
                         }}
                     />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={12} md={5}>
                     <Box
-                        style={{
+                        sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-around',
-                            width: '70%',
+                            width: {
+                                xs: '90%',
+                                md: '70%',
+                            },
                             textAlign: 'center',
-                            height: `${height * 0.7}px`,
-                            padding: `${height * 0.15}px 15%`,
+                            height: '70vh',
+                            padding: {
+                                xs: `${height * 0.15}px 5%`,
+                                md: `${height * 0.15}px 15%`,
+                            },
                         }}
                     >
                         <img
@@ -120,7 +148,7 @@ const Login: React.FC = () => {
                                     color: 'white',
                                 }}
                             >
-                                <FacebookTwoToneIcon style={{ marginRight: '5px' }} />
+                                <FacebookTwoToneIcon />
                                 <span>Facebook</span>
                             </Box>
                             <Box
@@ -153,19 +181,6 @@ const Login: React.FC = () => {
                             }}
                             inputRef={usernameInputRef}
                         />
-                        {/* <TextField
-                            id="password"
-                            label="Password"
-                            variant="outlined"
-                            value={accountUser.password}
-                            style={{ margin: '15px 0 30px 0' }}
-                            onChange={(e) => {
-                                setAccountUser((prevAccountUser) => ({
-                                    ...prevAccountUser,
-                                    password: e.target.value,
-                                }));
-                            }}
-                        /> */}
                         <Box
                             sx={{
                                 '.MuiFormControl-root': {

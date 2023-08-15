@@ -1,39 +1,25 @@
-import axios from 'axios';
+
+import { request } from '../request';
 
 export const getLocations = async (page: number, show: number) => {
-    const data = await axios({
-        method: 'get',
-        url: `http://localhost:8000/locations?page=${page}&show=${show}`,
-    })
-        .then(res => res.data);
+    const data = await request('get', '', `locations?page=${page}&show=${show}`);
     return data;
-};
+}
 
 export const createLocations = async (content: any) => {
-    const data = await axios({
-        method: 'post',
-        url: 'http://localhost:8000/locations',
-        data: content,
-    })
-        .then(res => res.data);
+    const data = await request('post', content, `locations`)
     return data;
-};
+}
 
 export const deleteLocations = async (content: any) => {
-    const data = await axios({
-        method: 'delete',
-        url: `http://localhost:8000/locations/${content}`,
-    })
-        .then(res => res.data);
+    const data = await request('delete', content, `locations/${content}`)
     return data;
-};
+}
 
 export const updateLocations = async (id: string, content: any) => {
-    const data = await axios({
-        method: 'put',
-        url: `http://localhost:8000/locations/${id}`,
-        data: content,
-    })
-        .then(res => res.data);
+    const data = await request('put', content, `locations/${id}`)
     return data;
-};
+}
+
+
+

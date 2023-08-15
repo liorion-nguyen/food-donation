@@ -6,19 +6,40 @@ import {
   Put,
   Param,
   Delete,
+  UseGuards,
+  Query,
+  BadRequestException,
+  Headers,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { AbilitiesGuard } from './ability/ability.guard';
+import { CheckAbilities, ReadUserAbility } from './ability/abilities.decorator';
+
 
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+  ) { }
+
 
   @Get()
-  async getAllUser(): Promise<User[]> {
-    return this.userService.getAllUser();
+  @UseGuards(AbilitiesGuard)
+  @CheckAbilities(new ReadUserAbility())
+  async getAllUser(
+    @Query() pageOption: {
+      page?: number,
+      show?: number,
+    },
+    @Headers('authorization') authorization: string, 
+  ): Promise<{ data: User[], count: number }> {
+    if (pageOption.page && pageOption.page < 1) {
+      throw new BadRequestException('Invalid page number. Page number must be greater than or equal to 1.');
+    }
+    return this.userService.getAllUser(pageOption, authorization);
   }
 
   @Get(':id')
@@ -33,12 +54,9 @@ export class UserController {
     return this.userService.createUser(user);
   }
 
+
   @Put(':id')
-  async update(
-    @Param('id')
-    id: string,
-    @Body() user: UpdateUserDto,
-  ): Promise<User> {
+  async update(@Param('id') id: string, @Body() user: UpdateUserDto,): Promise<User> {
     return this.userService.updateUser(id, user);
   }
 
