@@ -8,7 +8,7 @@ const DataHomeSlice = createSlice({
         Reward: true,
         Postmanager: true,
         Paymentrecord: true,
-
+        User: true,
     },
     reducers: {
         setPage(state, action) {
@@ -39,6 +39,12 @@ const DataHomeSlice = createSlice({
             return {
                 ...state,
                 Paymentrecord: !state.Paymentrecord
+            }
+        },
+        getUser(state, action) {
+            return {
+                ...state,
+                User: !state.User
             }
         }
     },

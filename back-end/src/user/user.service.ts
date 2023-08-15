@@ -10,9 +10,28 @@ export class UserService {
         @InjectModel(User.name) private userModel: mongoose.Model<User>,
     ) { }
 
-    async getAllUser(): Promise<User[]> {
-        const users = await this.userModel.find();
-        return users;
+    async getAllUser(pageOption: {
+        page?: number,
+        show?: number,
+        token?: string,
+      }, authorization: string,): Promise<{ data: User[], count: number }> {
+        const limit = pageOption?.show;
+        const skip = (pageOption?.page - 1) * pageOption?.show;
+        const sortOptions: any = {};
+        sortOptions.updatedAt = -1; 
+      
+        const users = await this.userModel.find().skip(skip).limit(limit).sort(sortOptions).exec();
+      
+        if (!users || users.length === 0) {
+          throw new NotFoundException('No users found in the requested page.');
+        }
+      
+        const totalCount = await this.userModel.countDocuments(); 
+      
+        return {
+          data: users,
+          count: totalCount,
+        };
     }
 
     async findOne(username: string): Promise<any> {

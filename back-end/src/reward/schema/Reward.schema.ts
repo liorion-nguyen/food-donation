@@ -4,7 +4,7 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
     timestamps: true,
 })
 export class Reward {
-    @Prop()
+    @Prop() 
     imgInformation: string;
 
     @Prop()

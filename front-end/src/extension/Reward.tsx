@@ -5,10 +5,9 @@ import { useState } from 'react';
 import firebase from "firebase/compat/app";
 import 'firebase/compat/firestore';
 import { DialogHomeActions } from '../store/DialogHome';
-import { createRewards } from '../API/reward/reward.api';
+import { createRewards, updateRewards } from '../API/reward/reward.api';
 import { DataHomeActions } from '../store/DataHome';
 import { alertActions } from '../store/alert';
-import { IConFormatText } from '../StyleComponentMui';
 
 import FormatListTich from '../Images/description/FormatListTich.svg';
 import FormatListNumber from '../Images/description/FormatListNumber.svg';
@@ -26,6 +25,7 @@ import IconEye from '../Images/add-post/IconEye.svg'
 import IconDelete from '../Images/add-post/IconDelete.svg';
 import { updatePaymentrecords } from '../API/paymentrecord/paymentrecord.api';
 import { LoadingActions } from '../store/loading';
+import { IConFormatText } from '../StyleComponent/Post';
 
 export default function Reward() {
     const rewards = useSelector((state: any) => state.dialog.data)
@@ -45,7 +45,11 @@ export default function Reward() {
     const getDate = () => {
         const date = new Date();
 
-        const time = `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+        const time = `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })}`;
         return time;
     };
 
@@ -117,7 +121,7 @@ export default function Reward() {
                             const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
                             setUrl(downloadURL);
 
-                            const response = await updatePaymentrecords(data._id, {
+                            const response = await updateRewards(data._id, {
                                 imgInformation: downloadURL,
                                 VoucherName: inpVoucherName,
                                 VoucherCode: inpVoucherCode,
@@ -133,7 +137,7 @@ export default function Reward() {
                 else {
                     dispatch(LoadingActions.showLoading());
                     const update = async () => {
-                        const response = await updatePaymentrecords(data._id, {
+                        const response = await updateRewards(data._id, {
                             imgInformation: imageUrl,
                             VoucherName: inpVoucherName,
                             VoucherCode: inpVoucherCode,
@@ -159,7 +163,7 @@ export default function Reward() {
                 dispatch(DialogHomeActions.handleAdd());
                 setLoading(false)
                 setSelectedFile(null);
-            }, 2000)
+            }, 500)
         }
         else {
             dispatch(alertActions.showAlert());

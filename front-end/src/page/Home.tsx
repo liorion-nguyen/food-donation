@@ -17,9 +17,13 @@ import ElementPostmanager from "../component/Postmanager";
 import ElementLocation from "../component/Location";
 import ElementReward from "../component/Reward";
 import ElementPaymentRecord from "../component/PaymentRecord";
+import ElementNewFeed from "../component/NewFeed";
+import ElementManager from "../component/Manager";
 import { DataHomeActions } from "../store/DataHome";
 
 import Overview from '../Images/home/main/Overview.svg';
+import newFeed from '../Images/home/main/newFeed.svg';
+import Manager from '../Images/home/main/Manager.png';
 import Location from '../Images/home/main/Location.svg';
 import PostManager from '../Images/home/main/PostManager.svg';
 import IconDonation from '../Images/home/overview/IconDonation.svg';
@@ -27,15 +31,38 @@ import Reward from '../Images/home/main/Reward.svg';
 import Logo from '../Images/home/main/Logo.svg'
 import AlertDialogSlide from "../extension/Dialog/Dialog";
 import Errol from "../Images/home/main/errol.svg";
+import { decodedAT } from "../API/decodedAccessToken/decodedAccessToken.api";
+import { StyleTitleHeader, StyleTitleLogo } from "../StyleComponent/Home";
+
 
 const Cookies = require('js-cookie');
 
 export default function Home(): JSX.Element {
     const navigate = useNavigate();
-
+    const [user, setUser] = useState({
+        user: {
+            isAdmin: false
+        },
+        error: '',
+    });
+    const dispatch = useDispatch();
     useEffect(() => {
         if (!Cookies.get('jwt') || Cookies.get('jwt') === undefined) {
             navigate('/Login');
+        }
+        else {
+            const decoded = async () => {
+                setUser(await decodedAT(Cookies.get('jwt')))
+                
+                if (user.error === "Invalid Access Token") {
+                    Cookies.remove('jwt');
+                    navigate('/Login');
+                }
+                else {
+                    dispatch(DataHomeActions.getUser(user.user))
+                }
+            }
+            decoded();
         }
     }, [Cookies.get('jwt')])
 
@@ -45,13 +72,13 @@ export default function Home(): JSX.Element {
             if (url === "") {
                 dispatch(DataHomeActions.setPage("Overview"))
             }
-            else if (url === "Location" || url === "Postmanager" || url === "Paymentrecord" || url === "Reward") dispatch(DataHomeActions.setPage(url))
+            else if (url === "Location" || url === "Postmanager" || url === "Paymentrecord" || url === "Reward" || url === "NewFeed" ||  url === "Manager") dispatch(DataHomeActions.setPage(url))
             else dispatch(DataHomeActions.setPage("errol"))
         }
 
     }, [window.location.pathname.split('/').pop()])
 
-    const dispatch = useDispatch();
+
     const sign = useSelector((state: any) => state.sign)
     function stringToColor(string: string) {
         let hash = 0;
@@ -98,6 +125,14 @@ export default function Home(): JSX.Element {
         {
             icon: IconDonation,
             content: "Paymentrecord"
+        },
+        {
+            icon: newFeed,
+            content: "NewFeed"
+        },
+        {
+            icon: Manager,
+            content: "Manager"
         }
     ];
 
@@ -143,37 +178,26 @@ export default function Home(): JSX.Element {
                 <Box
                     style={{
                         padding: '20px 10px',
+                        width: '100%',
                     }}
                 >
                     <Box
-                        style={{
+                        sx={{
                             alignItems: 'center',
                             justifyContent: 'center',
                             display: 'flex',
-                        }}
-                        sx={{
+                            flexDirection: {
+                                xs: 'column',
+                                md: 'row',
+                            },
                             '&:hover': {
                                 cursor: 'pointer'
                             }
                         }}
                         onClick={() => { window.location.href = "/" }}
                     >
-                        <img src={Logo}
-                            style={{
-                                width: '25%',
-                            }}
-                        />
-                        <h3
-                            style={{
-                                margin: '0 0 0 10px',
-                                fontFamily: 'Inter',
-                                fontStyle: 'normal',
-                                fontWeight: '800',
-                                fontSize: '22px',
-                                lineHeight: '150%',
-                                color: '#2BA84A',
-                            }}
-                        >Startnow</h3>
+                        <img src={Logo} />
+                        <StyleTitleLogo>Startnow</StyleTitleLogo>
                     </Box>
                     <Grid container spacing={1}
                         style={{
@@ -184,13 +208,15 @@ export default function Home(): JSX.Element {
                             navLefts.map((navLeft, index) => (
                                 <Grid item xs={12} key={index}>
                                     <Box
-                                        style={{
-                                            display: 'flex',
+                                        sx={{
+                                            display: navLeft.content === "Manager" && !user.user.isAdmin ? 'none' : 'flex',
+                                            flexDirection: {
+                                                xs: 'column',
+                                                md: 'row',
+                                            },
                                             alignItems: 'center',
                                             borderRadius: '4px',
-                                            padding: '15px',
-                                        }}
-                                        sx={{
+                                            padding: '10px 0',
                                             color: keyNavLeft === navLeft.content ? '#189548' : '#B1B5C3',
                                             background: keyNavLeft === navLeft.content ? '#D5EEDB' : '',
                                             '&:hover': {
@@ -209,7 +235,6 @@ export default function Home(): JSX.Element {
                                             else {
                                                 const pre = '/'
                                                 navigate(pre + navLeft.content);
-
                                             }
                                         }}
                                         onMouseEnter={() => {
@@ -222,18 +247,15 @@ export default function Home(): JSX.Element {
                                         <Box>
                                             <img src={navLeft.icon}
                                                 style={{
-                                                    filter: (keyNavLeft === navLeft.content) || (mouseNavleft == navLeft.content) ? '' : 'invert(49%) sepia(0%) hue-rotate(87deg) saturate(2)',
+                                                    filter: (navLeft.content === "NewFeed" || navLeft.content === "Manager") ? ((keyNavLeft === navLeft.content) || (mouseNavleft == navLeft.content) ? 'invert(53%) sepia(45%) saturate(722%) hue-rotate(83deg) brightness(92%) contrast(88%)' : '') : (keyNavLeft === navLeft.content) || (mouseNavleft == navLeft.content) ? '' : 'invert(49%) sepia(0%) hue-rotate(87deg) saturate(2)',
+                                                    margin: '0 15px',
+                                                    width: '20px'
                                                 }}
                                             />
                                         </Box>
-                                        <p
-                                            style={{
-                                                margin: '0 0 0 15px',
-                                                fontWeight: 600,
-                                            }}
-                                        >
+                                        <StyleTitleHeader>
                                             {navLeft.content}
-                                        </p>
+                                        </StyleTitleHeader>
                                     </Box>
                                 </Grid>
                             ))
@@ -277,15 +299,15 @@ export default function Home(): JSX.Element {
                                     color: '#353945'
                                 }}
                             /></InputAdornment>}
-                            style={{
-                                width: '35%',
+                            sx={{
+                                width: {
+                                    xs: '90%',
+                                    sm: '60%',
+                                    md: '35%',
+                                },
                                 background: '#F4F5F6',
                                 fontSize: '18px',
-                                height: '50px'
-
-                            }}
-
-                            sx={{
+                                height: '50px',
                                 ".MuiOutlinedInput-notchedOutline": {
                                     border: 'none',
                                 },
@@ -303,7 +325,7 @@ export default function Home(): JSX.Element {
                                         aria-haspopup="true"
                                         aria-expanded={open ? 'true' : undefined}
                                     >
-                                        <Avatar {...stringAvatar('Kent Dodds')}
+                                        <Avatar 
                                             style={{
                                                 scale: '1.2'
                                             }}
@@ -375,10 +397,12 @@ export default function Home(): JSX.Element {
                         backgorund: '#fcfcfd',
                     }}
                 >
+                    {keyNavLeft === "Manager" && user.user.isAdmin && <ElementManager />}
                     {keyNavLeft === "Overview" && <ElementOverview />}
                     {keyNavLeft === "Postmanager" && <ElementPostmanager />}
                     {keyNavLeft === "Location" && <ElementLocation />}
                     {keyNavLeft === "Reward" && <ElementReward />}
+                    {keyNavLeft === "NewFeed" && <ElementNewFeed />}
                     {keyNavLeft === "Paymentrecord" && <ElementPaymentRecord />}
                     {keyNavLeft === "errol" && (
                         <>

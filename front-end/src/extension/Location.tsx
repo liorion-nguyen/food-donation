@@ -7,7 +7,6 @@ import { createLocations, updateLocations } from '../API/location/location.api';
 import { DataHomeActions } from '../store/DataHome';
 import { alertActions } from '../store/alert';
 import { DialogHomeActions } from '../store/DialogHome';
-import { IConFormatText } from '../StyleComponentMui';
 
 import FormatListTich from '../Images/description/FormatListTich.svg';
 import FormatListNumber from '../Images/description/FormatListNumber.svg';
@@ -25,6 +24,7 @@ import IconEye from '../Images/add-post/IconEye.svg'
 import IconDelete from '../Images/add-post/IconDelete.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import { LoadingActions } from '../store/loading';
+import { IConFormatText } from '../StyleComponent/Post';
 
 export default function Location() {
     const locations = useSelector((state: any) => state.dialog.data)
@@ -43,7 +43,11 @@ export default function Location() {
     const getDate = () => {
         const date = new Date();
 
-        const time = `${date.toLocaleDateString('en-GB')} ${date.toLocaleTimeString('en-GB')}.${date.getMilliseconds().toString().padStart(3, '0')}`;
+        const time = `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        })}`;
         return time;
     };
 
@@ -91,13 +95,23 @@ export default function Location() {
                                 description: inpDescription,
                                 status: 'Active'
                             });
-                            dispatch(DataHomeActions.getLocation());
-
+                            if (response !== "Error") {
+                                dispatch(DataHomeActions.getLocation());
+                                dispatch(alertActions.setColorGreen());
+                                dispatch(alertActions.setContentAlert('Thêm thông tin thành công!'));
+                                dispatch(alertActions.showAlert());
+                            } else {
+                                dispatch(DataHomeActions.getLocation());
+                                dispatch(alertActions.setColorWrong());
+                                dispatch(alertActions.setContentAlert('Chưa đủ quyền để thực hiện!'));
+                                dispatch(alertActions.showAlert());
+                            }
                         }
                     );
                 }
             }
             else {
+                let response = ''
                 if (selectedFile !== null) {
                     dispatch(LoadingActions.showLoading());
                     const storageRef = firebase.storage().ref();
@@ -111,9 +125,9 @@ export default function Location() {
                         },
                         async () => {
                             const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
-                            
 
-                            const response = await updateLocations(data._id, {
+
+                            response = await updateLocations(data._id, {
                                 imgAddress: downloadURL,
                                 address: inpAddress,
                                 location: inpLocation,
@@ -121,6 +135,16 @@ export default function Location() {
                                 description: inpDescription,
                                 status: "Active"
                             })
+                            if (response !== "Error") {
+                                dispatch(alertActions.setColorGreen());
+                                dispatch(alertActions.setContentAlert('Cập nhật thông tin thành công!'));
+                                dispatch(alertActions.showAlert());
+                            }
+                            else {
+                                dispatch(alertActions.setColorWrong());
+                                dispatch(alertActions.setContentAlert('Chưa đủ quyền để thực hiện!'));
+                                dispatch(alertActions.showAlert());
+                            }
                             dispatch(DataHomeActions.getLocation());
                         }
                     );
@@ -128,7 +152,7 @@ export default function Location() {
                 else {
                     dispatch(LoadingActions.showLoading());
                     const update = async () => {
-                        const response = await updateLocations(data._id, {
+                        response = await updateLocations(data._id, {
                             imgAddress: imageUrl,
                             address: inpAddress,
                             location: inpLocation,
@@ -136,23 +160,27 @@ export default function Location() {
                             description: inpDescription,
                             status: "Active"
                         })
+                        if (response !== "Error") {
+                            dispatch(alertActions.setColorGreen());
+                            dispatch(alertActions.setContentAlert('Cập nhật thông tin thành công!'));
+                            dispatch(alertActions.showAlert());
+                        }
+                        else {
+                            dispatch(alertActions.setColorWrong());
+                            dispatch(alertActions.setContentAlert('Chưa đủ quyền để thực hiện!'));
+                            dispatch(alertActions.showAlert());
+                        }
                         dispatch(DataHomeActions.getLocation());
                     }
                     update();
                 }
-            }
-            dispatch(alertActions.showAlert());
-            dispatch(alertActions.setColorGreen());
-            if (mode !== "Update") {
-                dispatch(alertActions.setContentAlert('Thêm thông tin thành công!'));
-            }
-            else {
-                dispatch(alertActions.setContentAlert('Cập nhật thông tin thành công!'));
+                
+
             }
             setTimeout(() => {
                 dispatch(DialogHomeActions.handleAdd());
                 setSelectedFile(null);
-            }, Math.random() * 800)
+            }, 500)
         }
         else {
             dispatch(alertActions.showAlert());
@@ -447,11 +475,11 @@ export default function Location() {
                         >
                             <Box
                                 style={{
-                                    minWidth: '100%',
+                                    width: '100%',
                                     background: '#FFFFFF',
                                     border: '1px solid #E6E8EC',
                                     borderRadius: '4px',
-                                    minHeight: '120px',
+                                    height: '120px',
                                     display: (selectedFile || imageUrl) !== null ? 'flex' : 'none',
                                     alignItems: 'center',
                                     justifyContent: 'center',
@@ -461,8 +489,9 @@ export default function Location() {
                             >
                                 <img src={selectedFile !== null ? URL.createObjectURL(selectedFile) : imageUrl}
                                     style={{
-                                        width: '80%',
-                                        minHeight: '96px',
+                                        width: '90%',
+                                        // minHeight: 'px',
+                                        maxHeight: '90%'
                                     }}
                                 />
                             </Box>
