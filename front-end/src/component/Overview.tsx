@@ -13,6 +13,7 @@ export default function ElementOverview() {
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.dataHome.User)
     
+    
 
     const ListOverViews = [
         {
@@ -59,7 +60,7 @@ export default function ElementOverview() {
                         color: '#141416',
                         margin: '0'
                     }}
-                >{`Welcome back, ${user.username}`}</h3>
+                >{`Welcome back, Liorion`}</h3>
                 <Box
                     style={{
                         display: 'flex',

@@ -1,5 +1,11 @@
-import { IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, IsObject } from 'class-validator';
 
+interface OrgId {
+  Location: boolean;
+  Postmanager: boolean;
+  PaymentRecord: boolean;
+  Reward: boolean;
+}
 export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -17,7 +23,11 @@ export class UpdateUserDto {
   @IsNotEmpty()
   isAdmin: boolean;
 
-  @IsNumber()
+  @IsBoolean()
   @IsNotEmpty()
-  orgId: number;
+  status: boolean;
+
+  @IsObject()
+  @IsNotEmpty()
+  orgId: OrgId;
 }

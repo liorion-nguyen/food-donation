@@ -537,7 +537,7 @@ export default function Postmanager() {
                                     lineHeight: '24px',
                                     maxHeight: '80px',
                                 }}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setInpDescription(e.target.value)
                                 }}
                                 value={inpDescription}

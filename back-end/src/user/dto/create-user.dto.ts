@@ -1,7 +1,12 @@
-import { IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsBoolean, IsObject } from 'class-validator';
 
+interface OrgId {
+  Location: boolean;
+  Postmanager: boolean;
+  PaymentRecord: boolean;
+  Reward: boolean;
+}
 export class CreateUserDto {
-
   @IsString()
   @IsNotEmpty()
   username: string;
@@ -18,7 +23,12 @@ export class CreateUserDto {
   @IsNotEmpty()
   isAdmin: boolean;
 
-  @IsNumber()
+  @IsBoolean()
   @IsNotEmpty()
-  orgId: number;
+  status: boolean;
+
+  @IsObject()
+  @IsNotEmpty()
+  orgId: OrgId;
 }
+

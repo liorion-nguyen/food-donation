@@ -15,8 +15,8 @@ import { UserService } from './user.service';
 import { User } from './schemas/user.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AbilitiesGuard } from './ability/ability.guard';
 import { CheckAbilities, ReadUserAbility } from './ability/abilities.decorator';
+import { AbilitiesGuard } from './ability/ability.guard';
 
 
 @Controller('users')

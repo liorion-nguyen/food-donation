@@ -12,6 +12,7 @@ import Postmanager from '../Postmanager';
 import Paymentrecord from '../Paymentrecord';
 
 import AddSucces from '../../Images/success-message/AddSucces.svg'
+import Manager from '../Manager';
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -51,6 +52,7 @@ export default function AlertDialogSlide() {
                     {dialog.data.page === 'Reward' && <Reward />}
                     {dialog.data.page === 'Postmanager' && <Postmanager />}
                     {dialog.data.page === 'Paymentrecord' && <Paymentrecord />}
+                    {dialog.data.page === 'Manager' && <Manager />}
                 </Box>
 
 

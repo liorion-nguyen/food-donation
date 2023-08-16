@@ -34,6 +34,7 @@ import { AbilitiesGuard } from './user/ability/ability.guard';
   ],
   controllers: [AppController],
   providers: [AppService,
+    
     {
       provide: APP_GUARD,
       useClass: AbilitiesGuard,

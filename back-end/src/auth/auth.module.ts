@@ -5,6 +5,7 @@ import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategy/jwt.stategy';
+import { AbilityModule } from 'src/user/ability/ability.module';
 
 @Module({
   imports: [

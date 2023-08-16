@@ -33,6 +33,7 @@ import AlertDialogSlide from "../extension/Dialog/Dialog";
 import Errol from "../Images/home/main/errol.svg";
 import { decodedAT } from "../API/decodedAccessToken/decodedAccessToken.api";
 import { StyleTitleHeader, StyleTitleLogo } from "../StyleComponent/Home";
+import Error from "../component/Error";
 
 
 const Cookies = require('js-cookie');
@@ -41,7 +42,17 @@ export default function Home(): JSX.Element {
     const navigate = useNavigate();
     const [user, setUser] = useState({
         user: {
-            isAdmin: false
+            username: "",
+            password: '',
+            contact: '',
+            isAdmin: false,
+            orgId: {
+                Location: false,
+                Postmanager: false,
+                Paymentrecord: false,
+                Reward: false,
+            },
+            status: false,
         },
         error: '',
     });
@@ -53,13 +64,13 @@ export default function Home(): JSX.Element {
         else {
             const decoded = async () => {
                 setUser(await decodedAT(Cookies.get('jwt')))
-                
+
                 if (user.error === "Invalid Access Token") {
                     Cookies.remove('jwt');
                     navigate('/Login');
                 }
                 else {
-                    dispatch(DataHomeActions.getUser(user.user))
+                    dispatch(DataHomeActions.getUser())
                 }
             }
             decoded();
@@ -72,7 +83,7 @@ export default function Home(): JSX.Element {
             if (url === "") {
                 dispatch(DataHomeActions.setPage("Overview"))
             }
-            else if (url === "Location" || url === "Postmanager" || url === "Paymentrecord" || url === "Reward" || url === "NewFeed" ||  url === "Manager") dispatch(DataHomeActions.setPage(url))
+            else if (url === "Location" || url === "Postmanager" || url === "Paymentrecord" || url === "Reward" || url === "NewFeed" || url === "Manager") dispatch(DataHomeActions.setPage(url))
             else dispatch(DataHomeActions.setPage("errol"))
         }
 
@@ -96,45 +107,50 @@ export default function Home(): JSX.Element {
 
         return color;
     }
-    function stringAvatar(name: string) {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-        };
-    }
 
-    const navLefts = [
+    let navLefts = [
         {
             icon: Overview,
             content: "Overview",
         },
         {
-            icon: Location,
-            content: "Location",
-        },
-        {
-            icon: PostManager,
-            content: "Postmanager",
-        },
-        {
-            icon: Reward,
-            content: "Reward"
-        },
-        {
-            icon: IconDonation,
-            content: "Paymentrecord"
-        },
-        {
             icon: newFeed,
             content: "NewFeed"
         },
-        {
-            icon: Manager,
-            content: "Manager"
-        }
     ];
+    if (user.user.orgId.Location || user.user.isAdmin) {
+        navLefts.push({
+            icon: Location,
+            content: "Location",
+        })
+    }
+    if (user.user.orgId.Postmanager || user.user.isAdmin) {
+        navLefts.push({
+            icon: PostManager,
+            content: "Postmanager",
+        })
+    }
+    if (user.user.orgId.Paymentrecord || user.user.isAdmin) {
+        navLefts.push({
+            icon: IconDonation,
+            content: "Paymentrecord",
+        })
+    }
+    if (user.user.orgId.Reward || user.user.isAdmin) {
+        navLefts.push({
+            icon: Reward,
+            content: "Reward",
+        })
+    }
+    if (user.user.isAdmin) {
+        navLefts.push({
+            icon: Manager,
+            content: "Manager",
+        })
+    }
+    
+    
+
 
     const [mouseNavleft, setMouseNavleft] = useState("")
     const [heightWindow, setHeightWindow] = useState(window.innerHeight)
@@ -325,7 +341,7 @@ export default function Home(): JSX.Element {
                                         aria-haspopup="true"
                                         aria-expanded={open ? 'true' : undefined}
                                     >
-                                        <Avatar 
+                                        <Avatar
                                             style={{
                                                 scale: '1.2'
                                             }}
@@ -397,51 +413,14 @@ export default function Home(): JSX.Element {
                         backgorund: '#fcfcfd',
                     }}
                 >
-                    {keyNavLeft === "Manager" && user.user.isAdmin && <ElementManager />}
+                    {keyNavLeft === "Manager" && <ElementManager />}
                     {keyNavLeft === "Overview" && <ElementOverview />}
                     {keyNavLeft === "Postmanager" && <ElementPostmanager />}
                     {keyNavLeft === "Location" && <ElementLocation />}
                     {keyNavLeft === "Reward" && <ElementReward />}
                     {keyNavLeft === "NewFeed" && <ElementNewFeed />}
                     {keyNavLeft === "Paymentrecord" && <ElementPaymentRecord />}
-                    {keyNavLeft === "errol" && (
-                        <>
-                            <Box
-                                sx={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    height: '80vh'
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        width: '30%',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <img src={Errol}
-                                        style={{
-                                            width: '30%'
-                                        }}
-                                    />
-                                    <h3>Bạn hiện không xem được nội dung này</h3>
-                                    <p>Lỗi này thường do chủ sở hữu chỉ chia sẻ nội dung với một nhóm nhỏ, thay đổi người được xem hoặc đã xóa nội dung.</p>
-                                    <Button variant="contained"
-                                        onClick={() => {
-                                            const pre = '/'
-                                            navigate(pre);
-                                            dispatch(DataHomeActions.setPage("Overview"))
-                                        }}
-                                    >Đi tới trang Overview</Button>
-                                </Box>
-                            </Box>
-                        </>
-                    )}
+                    {keyNavLeft === "errol" && <Error />}
                     <AlertDialogSlide />
                 </Box>
             </Box>

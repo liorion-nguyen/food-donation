@@ -7,6 +7,7 @@ export const createUsers = async (content: any) => {
         data: content,
     })
         .then(res => res.data);
+    
     return data;
 };
 
@@ -25,6 +26,13 @@ export const getUsers = async (page: number, show: number) => {
     return data;
 };
 
+export const deleteUser = async (content: any) => {
+    const data = await request('delete', content, `users/${content}`)
+    return data;
+}
 
-  
+export const updateUsers = async (id: string, content: any) => {
+    const data = await request('put', content, `users/${id}`)
+    return data;
+}
 

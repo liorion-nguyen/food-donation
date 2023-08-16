@@ -136,10 +136,16 @@ export default function SignUp() {
                 setColor(true);
                 createUsers({
                     isAdmin: false,
-                    orgId: 1,
+                    orgId: {
+                        Location: false,
+                        Postmanager: false,
+                        PaymentRecord: false,
+                        Reward: false,
+                    },
                     contact: email,
                     password: password,
                     username: name,
+                    status: true,
                 })
 
                 setContentAlert("Đăng ký thành công!");

@@ -41,7 +41,7 @@ const DataHomeSlice = createSlice({
                 Paymentrecord: !state.Paymentrecord
             }
         },
-        getUser(state, action) {
+        getUser(state) {
             return {
                 ...state,
                 User: !state.User

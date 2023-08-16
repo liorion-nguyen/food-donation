@@ -21,8 +21,6 @@ export const request = async (method: string, data: any, param: string) => {
     } catch (error) {
         return "Error"
     }
-
-
 };
 
 

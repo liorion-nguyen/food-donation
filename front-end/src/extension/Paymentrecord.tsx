@@ -1,5 +1,4 @@
-import TextareaAutosize from '@mui/base/TextareaAutosize';
-import { Box, Button, CircularProgress, FormControl, Grid, MenuItem, Select } from '@mui/material';
+import { Box, Button, CircularProgress, FormControl, Grid, MenuItem, Select, TextareaAutosize } from '@mui/material';
 import { useState } from 'react';
 import firebase from "firebase/compat/app";
 import 'firebase/compat/firestore';
@@ -538,7 +537,7 @@ export default function Paymentrecord() {
                                     lineHeight: '24px',
                                     maxHeight: '80px',
                                 }}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setInpDescription(e.target.value)
                                 }}
                                 value={inpDescription}

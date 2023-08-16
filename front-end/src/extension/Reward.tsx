@@ -1,6 +1,5 @@
-import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, CircularProgress, FormControl, Grid, MenuItem, Select } from '@mui/material';
+import { Box, Button, CircularProgress, FormControl, Grid, MenuItem, Select, TextareaAutosize } from '@mui/material';
 import { useState } from 'react';
 import firebase from "firebase/compat/app";
 import 'firebase/compat/firestore';
@@ -455,7 +454,7 @@ export default function Reward() {
                                     maxHeight: '80px',
                                 }}
                                 value={inpDescription}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setInpDescription(e.target.value)
                                 }}
                                 placeholder='Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.'

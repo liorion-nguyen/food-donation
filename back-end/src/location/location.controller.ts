@@ -23,6 +23,8 @@ export class LocationController {
   constructor(private locationService: LocationService) { }
 
   @Get()
+  @UseGuards(AbilitiesGuard)
+  @CheckAbilities(new ReadUserAbility())
   async getNumberLocation(
     @Query() pageOption: {
       page?: number,
@@ -34,7 +36,6 @@ export class LocationController {
     }
     return this.locationService.getNumberLocation(pageOption);
   }
-
 
   @Post()
   @UseGuards(AbilitiesGuard)
