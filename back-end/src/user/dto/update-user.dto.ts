@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString, IsBoolean, IsObject } from 'class-validator';
 interface OrgId {
   Location: boolean;
   Postmanager: boolean;
-  PaymentRecord: boolean;
+  Paymentrecord: boolean;
   Reward: boolean;
 }
 export class UpdateUserDto {

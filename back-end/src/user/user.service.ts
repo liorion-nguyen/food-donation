@@ -13,24 +13,35 @@ export class UserService {
     async getAllUser(pageOption: {
         page?: number,
         show?: number,
-        token?: string,
-      }, authorization: string,): Promise<{ data: User[], count: number }> {
+        key?: string,
+    }, authorization: string,): Promise<{ data: User[], count: number }> {
         const limit = pageOption?.show;
         const skip = (pageOption?.page - 1) * pageOption?.show;
         const sortOptions: any = {};
-        sortOptions.updatedAt = -1; 
-      
-        const users = await this.userModel.find().skip(skip).limit(limit).sort(sortOptions).exec();
-      
-        if (!users || users.length === 0) {
-          throw new NotFoundException('No users found in the requested page.');
+        sortOptions.updatedAt = -1;
+
+        let query: any = {}; // Điều kiện truy vấn
+
+        if (pageOption.key) {
+            query.username = { $regex: pageOption.key, $options: 'i' }; // i: không phân biệt chữ hoa/thường
         }
-      
-        const totalCount = await this.userModel.countDocuments(); 
-      
+
+        const users = await this.userModel
+            .find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort(sortOptions)
+            .exec();
+
+        if (!users || users.length === 0) {
+            throw new NotFoundException('No users found in the requested page.');
+        }
+
+        const totalCount = await this.userModel.countDocuments(query);
+
         return {
-          data: users,
-          count: totalCount,
+            data: users,
+            count: totalCount,
         };
     }
 
@@ -50,12 +61,12 @@ export class UserService {
     }
     async createUser(user: User): Promise<any> {
         const hash: any = await bcrypt.hash(
-          user.password,
-          10,
+            user.password,
+            10,
         );
         user.password = hash;
         const res = this.userModel.create(user);
-    
+
         return res;
     }
 

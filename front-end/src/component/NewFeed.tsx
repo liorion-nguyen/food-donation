@@ -1,18 +1,11 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, InputLabel, NativeSelect, Pagination, Skeleton, Slide, TextField, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, Skeleton, Slide } from "@mui/material";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { DialogHomeActions } from "../store/DialogHome";
-import { deleteLocations, getLocations } from "../API/location/location.api";
-
-import MoreHoriz from '../Images/table-post/MoreHoriz.svg';
-import IconConfirmDelete from '../Images/table-post/IconConfirmDelete.png'
-import { alertActions } from "../store/alert";
 import { LoadingActions } from "../store/loading";
-import { BoxPostmanger, PPostmanger, StyleBoxMain, StylePExtra, StylePMain, StyleSelectBox, StyleSelectP } from "../StyleComponent/Post";
+import { StyleBoxMain, StylePExtra, StylePMain } from "../StyleComponent/Post";
 import { TransitionProps } from "@mui/material/transitions";
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { getNewFeeds } from "../API/location/location.api";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -36,49 +29,9 @@ export default function ElementNewFeed() {
         status: string;
     }
     const [listLocations, setListLocations] = useState<Location[]>([]);
-
-    const locations = useSelector((state: any) => state.dataHome.Location)
     const [pagination, setPagination] = useState(20)
     const [page, setPage] = useState(0)
     const [show, setShow] = useState(20)
-
-    const [open, setOpen] = useState({
-        mode: false,
-        id: -1,
-    });
-
-    const [openConfirm, setOpenConfirm] = useState({
-        mode: false,
-        id: -1,
-    });
-
-    const handleClickOpen = (id: number) => {
-        setOpenConfirm({
-            mode: true,
-            id: id,
-        });
-    };
-
-    const handleClose = () => {
-        setOpenConfirm({
-            mode: false,
-            id: -1,
-        });
-    };
-
-    const handleDelete = async (locationId: any) => {
-        try {
-            const response = await deleteLocations(locationId);
-            const fetchData = async () => {
-                const dataListLocations = await getLocations(page, show);
-                setListLocations(dataListLocations.data);
-                setPagination(dataListLocations.count);
-            };
-            fetchData();
-        } catch (error) {
-            console.error('Error deleting location:', error);
-        }
-    };
 
     const sentinelRef = useRef(null);
 
@@ -119,8 +72,10 @@ export default function ElementNewFeed() {
     useEffect(() => {
         const fetch = async () => {
             if (page !== 0) {
-                const dataListLocations = await getLocations(page === 0 ? 1 : page, show)
-                if (dataListLocations !== "error") {
+                const dataListLocations = await getNewFeeds(page === 0 ? 1 : page, show)
+                console.log(dataListLocations);
+
+                if (dataListLocations !== "Error") {
                     setListLocations((prev) => {
                         const newData = dataListLocations.data;
                         return [...prev, ...newData];
@@ -144,6 +99,8 @@ export default function ElementNewFeed() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 padding: '30px 0',
+                height: '88vh',
+                overflowY: 'scroll',
             }}
         >
             {
@@ -312,11 +269,11 @@ export default function ElementNewFeed() {
                                                 />
                                             </StyleBoxMain>
                                             <Skeleton animation="wave"
-                                                    sx={{
-                                                        width: '100%',
-                                                        height: '30px'
-                                                    }}
-                                                />
+                                                sx={{
+                                                    width: '100%',
+                                                    height: '30px'
+                                                }}
+                                            />
                                         </Box>
                                     </Box>
                                 ))
@@ -355,6 +312,6 @@ export default function ElementNewFeed() {
                     )
             }
 
-        </Box>
+        </Box >
     );
 }

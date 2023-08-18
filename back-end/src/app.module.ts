@@ -11,9 +11,7 @@ import { RewardModule } from './reward/reward.module';
 import { PaymentrecordModule } from './paymentrecord/paymentrecord.module';
 import { DecryptAccesstokenModule } from './decrypt-accesstoken/decrypt-accesstoken.module';
 import { ConfirmEmailModule } from './confirm-email/confirm-email.module';
-import { APP_GUARD } from '@nestjs/core';
 import { AbilityModule } from './user/ability/ability.module';
-import { AbilitiesGuard } from './user/ability/ability.guard';
 
 @Module({
   imports: [
@@ -30,15 +28,10 @@ import { AbilitiesGuard } from './user/ability/ability.guard';
     PaymentrecordModule,
     DecryptAccesstokenModule,
     ConfirmEmailModule,
-    AbilityModule
+    AbilityModule,
   ],
   controllers: [AppController],
-  providers: [AppService,
-    
-    {
-      provide: APP_GUARD,
-      useClass: AbilitiesGuard,
-    }],
+  providers: [AppService],
 
 })
 

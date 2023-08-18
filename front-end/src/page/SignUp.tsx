@@ -13,7 +13,9 @@ import { createUsers } from "../API/user/user.api";
 import navLeft from "../Images/sign/sign-up/SignUp_NavLeft.png"
 import iconWorld from "../Images/sign/sign-up/SignUp_IconWorld.svg"
 import { StyleImgWolrd } from "../StyleComponent/Sign";
-import { VeriCode, getMail } from "../API/emailVerification/emailVerification.api";
+import { VeriCode, checkMail, checkUsername, getMail } from "../API/emailVerification/emailVerification.api";
+import { useDispatch } from "react-redux";
+import { alertActions } from "../store/alert";
 
 const Cookies = require('js-cookie');
 
@@ -24,6 +26,7 @@ export default function SignUp() {
             navigate('/');
         }
     }, [Cookies.get('jwt')])
+    const dispatch = useDispatch();
     let theme = createTheme();
     const [showPassword, setShowPassword] = React.useState(false);
     const [loading, setLoading] = useState(false)
@@ -61,11 +64,22 @@ export default function SignUp() {
         switch (step) {
             case 1:
                 setLoading(true)
-                await getMail(email);
-                setLoading(false);
-                setStep(2);
+                const check = await checkMail(email);
+                if (check) {
+                    dispatch(alertActions.setColorGreen());
+                    dispatch(alertActions.setContentAlert(`Code vertify đang được gửi đến mail ${email}`));
+                    dispatch(alertActions.showAlert());
+                    await getMail(email);
+                    setLoading(false);
+                    setStep(2);
+                }
+                else {
+                    dispatch(alertActions.setColorWrong());
+                    dispatch(alertActions.setContentAlert('Mail đã bị trùng!'));
+                    dispatch(alertActions.showAlert());
+                    setLoading(false)
+                }
                 break;
-
             case 2:
                 setLoading(true)
                 const vertifyOTP = await VeriCode(otp)
@@ -84,7 +98,9 @@ export default function SignUp() {
 
                 break;
             case 3:
+                setLoading(true)
                 await handleValidation();
+                setLoading(false)
                 break;
 
         }
@@ -128,9 +144,16 @@ export default function SignUp() {
         </React.Fragment>
     );
 
-    const handleValidation = () => {
+    const handleValidation = async () => {
         const password = accountUser.password;
         const name = accountUser.name;
+        if (!(await checkUsername(name))) {
+            dispatch(alertActions.setColorWrong());
+            dispatch(alertActions.setContentAlert('Username đã bị trùng!'));
+            dispatch(alertActions.showAlert());
+            return;
+        }
+
         if (password.length >= 6 && /[^\w@_]/.test(password) === false && /\d/.test(password) === true && password !== name) {
             if (name.trim().split(" ").length < 2 && /[^\w\s]/.test(name) === false) {
                 setColor(true);

@@ -12,6 +12,7 @@ import Home from './page/Home';
 import Login from './page/Login';
 
 import Logo from './Images/home/main/Logo.svg'
+import Profile from './page/Profile';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL1I5MSnhqc4DiMDQI6BaO94LL6HBL4J0",
@@ -78,6 +79,10 @@ function App(): JSX.Element {
         <Route
           path="/SignUp"
           element={<SignUp />}
+        />
+        <Route 
+          path="Profile"
+          element={<Profile />}
         />
         <Route 
           path="*"

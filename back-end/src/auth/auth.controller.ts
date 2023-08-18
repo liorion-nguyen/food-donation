@@ -17,6 +17,11 @@ export class AuthController {
     @UseGuards(LocalAuthGuard)
     @Post('login')
     login(@Request() req): any {
-        return req.user;
+        if(req.user.user.status) {
+            return req.user;
+        }
+        else {
+            return false;
+        }
     }
 }

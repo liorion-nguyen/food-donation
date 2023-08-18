@@ -384,7 +384,10 @@ export default function Home(): JSX.Element {
                                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                             >
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={()=> {
+                                    window.location.href = "/Profile"
+                                    handleClose();
+                                }}>
                                     <Avatar /> Profile
                                 </MenuItem>
                                 <Divider />

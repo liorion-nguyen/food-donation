@@ -1,13 +1,17 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { PostmanagerService } from './postmanager.service';
 import { Postmanager } from './schemas/postmanager.schema';
 import { PostmanagerDto } from './dto/postmanager.dto';
+import { AbilitiesGuard } from 'src/user/ability/ability.guard';
+import { CheckAbilities, ReadUserAbility } from 'src/user/ability/abilities.decorator';
 
 @Controller('postmanagers')
 export class PostmanagerController {
     constructor(private postmanagerService: PostmanagerService) { }
 
     @Get()
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async getNumberPostmanager(
         @Query() pageOption: {
             page?: number,
@@ -21,11 +25,15 @@ export class PostmanagerController {
     }
 
     @Post()
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async createPostmanager(@Body() postmanager: PostmanagerDto): Promise<Postmanager> {
         return this.postmanagerService.createPostmanager(postmanager);
     }
 
     @Put(':id')
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async update(
         @Param('id')
         id: string,
@@ -35,6 +43,8 @@ export class PostmanagerController {
     }
 
     @Delete(':id')
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async deletePostmanager(
         @Param('id')
         id: string,

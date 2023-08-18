@@ -33,6 +33,7 @@ export class UserController {
     @Query() pageOption: {
       page?: number,
       show?: number,
+      key?: string,
     },
     @Headers('authorization') authorization: string, 
   ): Promise<{ data: User[], count: number }> {

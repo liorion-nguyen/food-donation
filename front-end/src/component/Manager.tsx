@@ -46,7 +46,14 @@ export default function ElementManager() {
         const fetchData = async () => {
             dispatch(LoadingActions.showLoading());
             const dataListUsers = await getUsers(page, show);
-            dataListUsers === "Error" ? setError(true) : setError(false)
+            if (dataListUsers === "Error") {
+                setError(true);
+                dispatch(alertActions.setColorWrong());
+                dispatch(alertActions.setContentAlert('Không có quyền để vào!'));
+                dispatch(alertActions.showAlert());
+            } else {
+                setError(false)
+            }
             setListUsers(dataListUsers.data);
             setPagination(dataListUsers.count);
             dispatch(LoadingActions.hideLoading());
@@ -533,7 +540,7 @@ export default function ElementManager() {
                             </NativeSelect>
                         </FormControl>
 
-                        <Pagination count={Math.ceil(pagination / show)} shape="rounded" size='small' page={page}
+                        <Pagination count={Math.ceil(pagination / show) || 0} shape="rounded" size='small' page={page}
                             sx={{
                                 '.Mui-selected': {
                                     backgroundColor: '#D5EEDB !important',

@@ -1,13 +1,17 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { Reward } from './schema/Reward.schema';
 import { RewardDto } from './dto/Reward.dto';
 import { RewardService } from './reward.service';
+import { AbilitiesGuard } from 'src/user/ability/ability.guard';
+import { CheckAbilities, ReadUserAbility } from 'src/user/ability/abilities.decorator';
 
 @Controller('rewards')
 export class RewardController {
     constructor(private rewardService: RewardService) { }
 
     @Get()
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async getNumberReward(
         @Query() pageOption: {
             page?: number,
@@ -21,11 +25,15 @@ export class RewardController {
     }
 
     @Post()
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async createReward(@Body() reward: RewardDto): Promise<Reward> {
         return this.rewardService.createReward(reward);
     }
 
     @Put(':id')
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async update(
         @Param('id')
         id: string,
@@ -35,6 +43,8 @@ export class RewardController {
     }
 
     @Delete(':id')
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
     async deleteReward(
         @Param('id')
         id: string,

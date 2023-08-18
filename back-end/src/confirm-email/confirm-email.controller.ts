@@ -18,6 +18,18 @@ export class ConfirmEmailController {
         return { code };
     }
 
+    @Get('checkmail/:mail')
+    async checkDuplicatesckMail(@Param('mail') mail: string) {
+        const isCheck = await this.confirmEmailService.checkMailDuplicates(mail);
+        return isCheck;
+    }
+
+    @Get('checkusername/:username')
+    async checkDuplicatesckUsername(@Param('username') username: string) {
+        const isCheck = await this.confirmEmailService.checkUsernameDuplicates(username);
+        return isCheck;
+    }
+
     @Post('confirm/:code')
     async confirmCode(@Param('code') code: string) {
         const isValid = await this.confirmEmailService.validateCode(code);

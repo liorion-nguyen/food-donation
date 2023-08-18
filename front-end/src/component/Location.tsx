@@ -48,7 +48,14 @@ export default function ElementLocation() {
         const fetchData = async () => {
             dispatch(LoadingActions.showLoading());
             const dataListLocations = await getLocations(page, show);
-            dataListLocations === "Error" ? setError(true) : setError(false)
+            if (dataListLocations === "Error") {
+                setError(true);
+                dispatch(alertActions.setColorWrong());
+                dispatch(alertActions.setContentAlert('Không có quyền để vào!'));
+                dispatch(alertActions.showAlert());
+            } else {
+                setError(false)
+            }
             setListLocations(dataListLocations.data);
             setPagination(dataListLocations.count);
             dispatch(LoadingActions.hideLoading());
@@ -578,7 +585,7 @@ export default function ElementLocation() {
                                 <option value={20}>20</option>
                             </NativeSelect>
                         </FormControl>
-                        <Pagination count={Math.ceil(pagination / show)} shape="rounded" size='small' page={page}
+                        <Pagination count={Math.ceil(pagination / show) || 0} shape="rounded" size='small' page={page}
                             sx={{
                                 '.Mui-selected': {
                                     backgroundColor: '#D5EEDB !important',

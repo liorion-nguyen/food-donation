@@ -23,7 +23,7 @@ export class AbilityFactory {
             can(Action.Manage, 'all');
         } else {
             cannot(Action.Read, User).because('Your special messege: only Admin!!');
-            can(Action.Create, User).because('Your special messege: only Admin!!')
+            can(Action.Create, User)
             cannot(Action.Delete, User).because('Your cannot delete')
         }
 
@@ -34,11 +34,67 @@ export class AbilityFactory {
 
     defineAbilityLocation(user: User) {
         const { can, cannot, build } = new AbilityBuilder(Ability as AbilityClass<AppAbility>);
+        if (user.isAdmin) {
+            can(Action.Manage, 'all');
+        } else {
+            if (user.orgId.Location) {
+                cannot(Action.Delete, User);
+                cannot(Action.Create, User);
+                can(Action.Read, User);
+            }
+            else {
+                cannot(Action.Read, User).because('Your special messege: only Admin!!');
+            }
+        }
+        return build({
+            detectSubjectType: (item) => item.constructor as ExtractSubjectType<Subjects>,
+        })
+    }
+
+    defineAbilityPostmanager(user: User) {
+        const { can, cannot, build } = new AbilityBuilder(Ability as AbilityClass<AppAbility>);
 
         if (user.isAdmin) {
             can(Action.Manage, 'all');
         } else {
-            if(user.orgId.Location) {
+            if (user.orgId.Postmanager) {
+                can(Action.Read, User)
+            }
+            else {
+                cannot(Action.Read, User).because('Your special messege: only Admin!!');
+            }
+        }
+        return build({
+            detectSubjectType: (item) => item.constructor as ExtractSubjectType<Subjects>,
+        })
+    }
+
+    defineAbilityReward(user: User) {
+        const { can, cannot, build } = new AbilityBuilder(Ability as AbilityClass<AppAbility>);
+
+        if (user.isAdmin) {
+            cannot(Action.Manage, 'all');
+        } else {
+            cannot(Action.Read, User)
+            if (user.orgId.Reward) {
+                can(Action.Read, User)
+            }
+            else {
+                cannot(Action.Read, User).because('Your special messege: only Admin!!');
+            }
+        }
+        return build({
+            detectSubjectType: (item) => item.constructor as ExtractSubjectType<Subjects>,
+        })
+    }
+
+    defineAbilityPaymentrecord(user: User) {
+        const { can, cannot, build } = new AbilityBuilder(Ability as AbilityClass<AppAbility>);
+
+        if (user.isAdmin) {
+            can(Action.Manage, 'all');
+        } else {
+            if (user.orgId.Paymentrecord) {
                 can(Action.Read, User)
             }
             else {

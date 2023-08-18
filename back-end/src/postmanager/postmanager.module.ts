@@ -3,6 +3,7 @@ import { PostmanagerController } from './postmanager.controller';
 import { PostmanagerService } from './postmanager.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PostmanagerSchema } from './schemas/postmanager.schema';
+import { AbilityModule } from 'src/user/ability/ability.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { PostmanagerSchema } from './schemas/postmanager.schema';
         schema: PostmanagerSchema,
       },
     ]),
+    AbilityModule,
   ],
   controllers: [PostmanagerController],
   providers: [PostmanagerService],

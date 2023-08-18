@@ -18,6 +18,10 @@ const Cookies = require('js-cookie');
 interface AccountUser {
     username: string;
     password: string;
+    contact: string;
+    isAdmin: boolean;
+    orgId: Object;
+    status: boolean;
 }
 
 const Login: React.FC = () => {
@@ -27,10 +31,9 @@ const Login: React.FC = () => {
     useEffect(() => {
         const decoded = async () => {
             const encode = Cookies.get('jwt') || "liorion";
-            
+
             const user = await decodedAT(encode)
             
-
             if (user.error === "Invalid Access Token") {
                 Cookies.remove('jwt');
             }
@@ -46,7 +49,11 @@ const Login: React.FC = () => {
 
     const [accountUser, setAccountUser] = useState<AccountUser>({
         username: '',
-        password: ''
+        password: '',
+        contact: '',
+        isAdmin: false,
+        orgId: {},
+        status: false,
     });
     const [height, setHeight] = useState(document.documentElement.scrollHeight)
     const handleLogin = () => {
@@ -56,14 +63,22 @@ const Login: React.FC = () => {
                     username: accountUser.username,
                     password: accountUser.password,
                 });
+                if (!response) {
+                    dispatch(alertActions.showAlert());
+                    dispatch(alertActions.setColorWrong());
+                    dispatch(alertActions.setContentAlert('Tài khoản đã bị khoá!'));
+                    return false;
+                } else {
+                    dispatch(alertActions.showAlert());
+                    dispatch(alertActions.setColorGreen());
+                    dispatch(alertActions.setContentAlert('Đăng nhập thành công'));
+                    const accessToken = response.accessToken;
+                    Cookies.set('jwt', accessToken, { expires: 1, secure: true, sameSite: 'strict' });
+                    const jwtCookie = Cookies.get('jwt');
+                    return true;
+                }
 
-                dispatch(alertActions.showAlert());
-                dispatch(alertActions.setColorGreen());
-                dispatch(alertActions.setContentAlert('Đăng nhập thành công'));
-                const accessToken = response.accessToken;
-                Cookies.set('jwt', accessToken, { expires: 1, secure: true, sameSite: 'strict' });
-                const jwtCookie = Cookies.get('jwt');
-                return true;
+
             } catch (error) {
                 dispatch(alertActions.showAlert());
                 dispatch(alertActions.setColorWrong());
@@ -74,7 +89,11 @@ const Login: React.FC = () => {
         Check()
         setAccountUser({
             username: '',
-            password: ''
+            password: '',
+            contact: '',
+            isAdmin: false,
+            orgId: {},
+            status: false,
         })
         usernameInputRef.current?.focus();
     };
@@ -167,7 +186,11 @@ const Login: React.FC = () => {
                                 <span>Google</span>
                             </Box>
                         </Box>
-                        <p>OR</p>
+                        <p
+                            style={{
+                                margin: '20px 0'
+                            }}
+                        >OR</p>
                         <TextField
                             id="username"
                             label="Username"
