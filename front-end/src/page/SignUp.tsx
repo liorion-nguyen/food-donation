@@ -2,7 +2,6 @@ import { Box, Button, CircularProgress, FilledInput, FormControl, Grid, IconButt
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import React, { useEffect, useState } from "react";
-import { MuiTelInput } from "mui-tel-input";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import Snackbar from '@mui/material/Snackbar';
 import CloseIcon from '@mui/icons-material/Close';
@@ -169,6 +168,25 @@ export default function SignUp() {
                     password: password,
                     username: name,
                     status: true,
+                    fullname: '',
+                    avatar: '',
+                    cover: '',
+                    bio: '',
+                    information: {
+                        Category: '',
+                        Subname: '',
+                        Work: '',
+                        Education: '',
+                        Live: '',
+                        Countryside: '',
+                        Relationship: '',
+                        Join: getCurrentDate(),
+                        Web: '',
+                        Instagram: '',
+                        Facebook: '',
+                        Gender: '',
+                        Datebird: '',
+                    },
                 })
 
                 setContentAlert("Đăng ký thành công!");
@@ -198,6 +216,19 @@ export default function SignUp() {
     const handleChangeCode = (newValue: any) => {
         setOtp(newValue)
     }
+
+    const getCurrentDate = () => {
+        const currentDate = new Date();
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const month = monthNames[currentDate.getMonth()];
+        const year = currentDate.getFullYear();
+
+        const formattedDate = `Join in ${month} ${year}`;
+        return formattedDate;
+    };
 
     return (
         <>

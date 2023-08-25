@@ -1,4 +1,16 @@
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty, IsObject } from "class-validator";
+
+
+interface Actions {
+    likes: {
+        like: Array<string>,
+        love: Array<string>,
+        haha: Array<string>,
+        sad: Array<string>,
+    },
+    comments: Array<object>,
+    shares: Array<string>,
+}
 
 export class PostmanagerDto {
     @IsString()
@@ -36,4 +48,10 @@ export class PostmanagerDto {
     @IsString()
     @IsNotEmpty()
     status: string;
+
+    @IsString()
+    author: string;
+
+    @IsObject()
+    actions: Actions;
 }

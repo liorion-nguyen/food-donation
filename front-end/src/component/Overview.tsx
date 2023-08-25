@@ -11,9 +11,7 @@ import Donation from "../Images/home/main/Donation.svg";
 
 export default function ElementOverview() {
     const dispatch = useDispatch();
-    const user = useSelector((state: any) => state.dataHome.User)
-    
-    
+    const users = useSelector((state: any) => state.user.user)
 
     const ListOverViews = [
         {
@@ -60,7 +58,12 @@ export default function ElementOverview() {
                         color: '#141416',
                         margin: '0'
                     }}
-                >{`Welcome back, Liorion`}</h3>
+                >
+                    {users.fullname
+                        ? `Welcome back, ${users.fullname}`
+                        : `Welcome back, ${users.username || ""}`
+                    }
+                </h3>
                 <Box
                     style={{
                         display: 'flex',

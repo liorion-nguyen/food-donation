@@ -7,7 +7,6 @@ export const createUsers = async (content: any) => {
         data: content,
     })
         .then(res => res.data);
-    
     return data;
 };
 
@@ -23,6 +22,16 @@ export const CheckLogin = async (content: any) => {
 
 export const getUsers = async (page: number, show: number) => {
     const data = await request('get', '', `users?page=${page}&show=${show}`)
+    return data;
+};
+
+export const getUser = async (id: string) => {
+    const data = await request('get', '', `users/${id}`)
+    return data;
+};
+
+export const getUserCommnet = async (id: string) => {
+    const data = await request('get', '', `users/comment/${id}`)
     return data;
 };
 

@@ -6,6 +6,23 @@ interface OrgId {
   Paymentrecord: boolean;
   Reward: boolean;
 }
+
+interface Information {
+  Category: string;
+  Subname: string;
+  Work: string;
+  Education: string;
+  Live: string;
+  Countryside: string;
+  Relationship: string;
+  Join: string;
+  Web: string;
+  Instagram: string;
+  Facebook: string;
+  Gender: string;
+  Datebird: string; 
+}
+
 export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
@@ -16,8 +33,23 @@ export class UpdateUserDto {
   password: string;
 
   @IsString()
+  fullname: string;
+
+  @IsString()
   @IsNotEmpty()
   contact: string;
+
+  @IsString()
+  avatar: string;
+
+  @IsString()
+  cover: string;
+
+  @IsString()
+  bio: string;
+
+  @IsObject()
+  information: Information;
 
   @IsBoolean()
   @IsNotEmpty()

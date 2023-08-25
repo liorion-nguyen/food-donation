@@ -59,6 +59,22 @@ export class UserService {
         }
         return user;
     }
+
+    async getUserComment(id: string): Promise<{ fullname: string; avatar: string; id: string; username: string }> {
+        const user = await this.userModel.findById(id, 'fullname avatar id username').exec();
+      
+        if (!user) {
+          throw new NotFoundException('User not found.');
+        }
+      
+        return {
+          fullname: user.fullname,
+          avatar: user.avatar,
+          id: user.id,
+          username: user.username,
+        };
+      }
+    
     async createUser(user: User): Promise<any> {
         const hash: any = await bcrypt.hash(
             user.password,

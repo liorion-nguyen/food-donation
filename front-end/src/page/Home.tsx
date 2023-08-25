@@ -34,44 +34,85 @@ import Errol from "../Images/home/main/errol.svg";
 import { decodedAT } from "../API/decodedAccessToken/decodedAccessToken.api";
 import { StyleTitleHeader, StyleTitleLogo } from "../StyleComponent/Home";
 import Error from "../component/Error";
+import { getUser } from "../API/user/user.api";
+import { userActions } from "../store/user";
+import AvatarSmall from "../component/Profile/avatar";
 
 
 const Cookies = require('js-cookie');
 
 export default function Home(): JSX.Element {
+
     const navigate = useNavigate();
-    const [user, setUser] = useState({
-        user: {
-            username: "",
-            password: '',
-            contact: '',
-            isAdmin: false,
-            orgId: {
-                Location: false,
-                Postmanager: false,
-                Paymentrecord: false,
-                Reward: false,
-            },
-            status: false,
-        },
-        error: '',
-    });
     const dispatch = useDispatch();
+    const users = useSelector((state: any) => state.user.user)
+    useEffect(() => {
+        if (users.username) {
+            let extraNavLeft = [ ...navLefts];
+            if (users.orgId.Location && !extraNavLeft.some(navItem => navItem.content === 'Location')) {
+                extraNavLeft.push({
+                    icon: Location,
+                    content: "Location",
+                })
+            }
+            if (users.orgId.Postmanager) {
+                extraNavLeft.push({
+                    icon: PostManager,
+                    content: "Postmanager",
+                })
+            }
+            if (users.orgId.Paymentrecord) {
+                extraNavLeft.push({
+                    icon: IconDonation,
+                    content: "Paymentrecord",
+                })
+            }
+            if (users.orgId.Reward) {
+                extraNavLeft.push({
+                    icon: Reward,
+                    content: "Reward",
+                })
+            }
+            if (users.isAdmin) {
+                extraNavLeft.push({
+                    icon: Manager,
+                    content: "Manager",
+                })
+            }
+            setNavLefts(extraNavLeft)
+        }
+    }, [users])
+    
+    const [navLefts, setNavLefts] = useState([
+        {
+            icon: Overview,
+            content: "Overview",
+        },
+        {
+            icon: newFeed,
+            content: "NewFeed"
+        },
+    ])
+    
+
     useEffect(() => {
         if (!Cookies.get('jwt') || Cookies.get('jwt') === undefined) {
             navigate('/Login');
         }
         else {
             const decoded = async () => {
-                setUser(await decodedAT(Cookies.get('jwt')))
+                const use = await decodedAT(Cookies.get('jwt'))
 
-                if (user.error === "Invalid Access Token") {
+                if (use.error === "Invalid Access Token") {
                     Cookies.remove('jwt');
                     navigate('/Login');
                 }
                 else {
                     dispatch(DataHomeActions.getUser())
+                    const u = await getUser(use.user._id);
+                    dispatch(userActions.setUser(u))
                 }
+
             }
             decoded();
         }
@@ -107,50 +148,6 @@ export default function Home(): JSX.Element {
 
         return color;
     }
-
-    let navLefts = [
-        {
-            icon: Overview,
-            content: "Overview",
-        },
-        {
-            icon: newFeed,
-            content: "NewFeed"
-        },
-    ];
-    if (user.user.orgId.Location || user.user.isAdmin) {
-        navLefts.push({
-            icon: Location,
-            content: "Location",
-        })
-    }
-    if (user.user.orgId.Postmanager || user.user.isAdmin) {
-        navLefts.push({
-            icon: PostManager,
-            content: "Postmanager",
-        })
-    }
-    if (user.user.orgId.Paymentrecord || user.user.isAdmin) {
-        navLefts.push({
-            icon: IconDonation,
-            content: "Paymentrecord",
-        })
-    }
-    if (user.user.orgId.Reward || user.user.isAdmin) {
-        navLefts.push({
-            icon: Reward,
-            content: "Reward",
-        })
-    }
-    if (user.user.isAdmin) {
-        navLefts.push({
-            icon: Manager,
-            content: "Manager",
-        })
-    }
-    
-    
-
 
     const [mouseNavleft, setMouseNavleft] = useState("")
     const [heightWindow, setHeightWindow] = useState(window.innerHeight)
@@ -221,11 +218,11 @@ export default function Home(): JSX.Element {
                         }}
                     >
                         {
-                            navLefts.map((navLeft, index) => (
-                                <Grid item xs={12} key={index}>
+                            navLefts.map((navLeft) => (
+                                <Grid item xs={12} key={navLeft.content}>
                                     <Box
                                         sx={{
-                                            display: navLeft.content === "Manager" && !user.user.isAdmin ? 'none' : 'flex',
+                                            display: 'flex',
                                             flexDirection: {
                                                 xs: 'column',
                                                 md: 'row',
@@ -341,11 +338,7 @@ export default function Home(): JSX.Element {
                                         aria-haspopup="true"
                                         aria-expanded={open ? 'true' : undefined}
                                     >
-                                        <Avatar
-                                            style={{
-                                                scale: '1.2'
-                                            }}
-                                        />
+                                        <AvatarSmall value={users.avatar} size={50} />
                                     </IconButton>
                                 </Tooltip>
                             </Box>
@@ -384,11 +377,11 @@ export default function Home(): JSX.Element {
                                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                             >
-                                <MenuItem onClick={()=> {
+                                <MenuItem onClick={() => {
                                     window.location.href = "/Profile"
                                     handleClose();
                                 }}>
-                                    <Avatar /> Profile
+                                    <AvatarSmall value={users.avatar} size={40} /> Profile
                                 </MenuItem>
                                 <Divider />
                                 <MenuItem onClick={handleClose}>

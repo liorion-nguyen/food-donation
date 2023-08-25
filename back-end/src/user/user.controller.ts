@@ -50,6 +50,13 @@ export class UserController {
     return this.userService.getUser(id);
   }
 
+  @Get('comment/:id')
+  async getUserComment(
+    @Param('id') id: string,
+  ): Promise<{ fullname: string; avatar: string; id: string; username: string }> {
+    return this.userService.getUserComment(id);
+  }
+
   @Post()
   async createUser(@Body() user: CreateUserDto): Promise<User> {
     return this.userService.createUser(user);

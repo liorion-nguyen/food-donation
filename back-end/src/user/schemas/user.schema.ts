@@ -7,23 +7,54 @@ interface OrgId {
   Reward: boolean;
 }
 
+interface Information {
+  Category: string;
+  Subname: string;
+  Work: string;
+  Education: string;
+  Live: string;
+  Countryside: string;
+  Relationship: string;
+  Join: string;
+  Web: string;
+  Instagram: string;
+  Facebook: string;
+  Gender: string;
+  Datebird: string; 
+}
+
 @Schema({
   timestamps: true,
 })
 export class User {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   username: string;
 
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop()
+  fullname: string;
+
+  @Prop({ required: true })
   contact: string;
+
+  @Prop()
+  avatar: string;
+
+  @Prop()
+  cover: string;
+
+  @Prop()
+  bio: string;
+
+  @Prop({ type: Object })
+  information: Information;
 
   @Prop({ required: true })
   isAdmin: boolean;
 
-  @Prop({ type: Object, required: true }) 
+  @Prop({ type: Object, required: true })
   orgId: OrgId;
 
   @Prop({ required: true })

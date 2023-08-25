@@ -42,7 +42,7 @@ export default function ElementLocation() {
     const locations = useSelector((state: any) => state.dataHome.Location)
     const [pagination, setPagination] = useState(1)
     const [page, setPage] = useState(1)
-    const [show, setShow] = useState(5)
+    const [show, setShow] = useState(5) 
 
     useEffect(() => {
         const fetchData = async () => {

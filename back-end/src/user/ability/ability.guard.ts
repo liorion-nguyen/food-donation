@@ -17,6 +17,7 @@ export class AbilitiesGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const accessToken = request.headers['authorization'];
         
+        
         if (request.route.path !== '/postmanagers' && request.route.path !== '/paymentrecords' && request.route.path !== '/users' && request.route.path !== '/rewards' && request.route.path !== '/locations') {
             return true;
         }

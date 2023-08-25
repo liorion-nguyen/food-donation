@@ -55,10 +55,14 @@ export class AbilityFactory {
         const { can, cannot, build } = new AbilityBuilder(Ability as AbilityClass<AppAbility>);
 
         if (user.isAdmin) {
+            console.log("admin");
+
             can(Action.Manage, 'all');
         } else {
             if (user.orgId.Postmanager) {
-                can(Action.Read, User)
+                cannot(Action.Delete, User);
+                cannot(Action.Create, User);
+                can(Action.Read, User);
             }
             else {
                 cannot(Action.Read, User).because('Your special messege: only Admin!!');
@@ -73,9 +77,8 @@ export class AbilityFactory {
         const { can, cannot, build } = new AbilityBuilder(Ability as AbilityClass<AppAbility>);
 
         if (user.isAdmin) {
-            cannot(Action.Manage, 'all');
+            can(Action.Manage, 'all');
         } else {
-            cannot(Action.Read, User)
             if (user.orgId.Reward) {
                 can(Action.Read, User)
             }

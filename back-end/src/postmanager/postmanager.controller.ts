@@ -24,6 +24,17 @@ export class PostmanagerController {
         return this.postmanagerService.getNumberPostmanager(pageOption);
     }
 
+    @Get(':id')
+    @UseGuards(AbilitiesGuard)
+    @CheckAbilities(new ReadUserAbility())
+    async getPostSelf(
+        @Param('id')
+        id: string,
+    ) {
+        return this.postmanagerService.getPostSelf(id);
+    }
+
+
     @Post()
     @UseGuards(AbilitiesGuard)
     @CheckAbilities(new ReadUserAbility())

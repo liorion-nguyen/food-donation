@@ -5,6 +5,11 @@ export const getPostmanagers = async (page: number, show: number) => {
     return data;
 }
 
+export const getPostSelf = async (id: string) => {
+    const data = await request('get', '', `postmanagers/${id}`)
+    return data;
+}
+
 export const createPostmanagers = async (content: any) => {
     const data = await request('post', content, `postmanagers`)
     return data;

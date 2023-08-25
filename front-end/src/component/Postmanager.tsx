@@ -3,7 +3,6 @@ import { forwardRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-
 import { deletePostmanagers, getPostmanagers } from "../API/postmanager/postmanager.api";
 import { DialogHomeActions } from "../store/DialogHome";
 
@@ -52,7 +51,9 @@ export default function ElementPostmanager() {
         const fetchData = async () => {
             dispatch(LoadingActions.showLoading());
             const dataListPostMangers = await getPostmanagers(page, show);
+            
             if (dataListPostMangers === "Error") {
+                
                 setError(true);
                 dispatch(alertActions.setColorWrong());
                 dispatch(alertActions.setContentAlert('Không có quyền để vào!'));

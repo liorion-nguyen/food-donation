@@ -75,21 +75,21 @@ function App(): JSX.Element {
         <Route
           path="/Login"
           element={<Login />}
-        /> 
+        />
         <Route
           path="/SignUp"
           element={<SignUp />}
         />
-        <Route 
+        <Route
           path="Profile"
           element={<Profile />}
         />
-        <Route 
+        <Route
           path="*"
           element={<Home />}
         />
       </Routes>
-      
+
       <Snackbar
         open={alert.open}
         autoHideDuration={2000}
