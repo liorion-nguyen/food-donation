@@ -35,6 +35,12 @@ export const getUserCommnet = async (id: string) => {
     return data;
 };
 
+export const getSearchUser = async (content: string) => {
+    const data = await request('get', '', `users/search/${content}`)
+    return data;
+};
+
+
 export const deleteUser = async (content: any) => {
     const data = await request('delete', content, `users/${content}`)
     return data;

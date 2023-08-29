@@ -5,6 +5,11 @@ export const getPostmanagers = async (page: number, show: number) => {
     return data;
 }
 
+export const getNewFeeds = async (page: number, show: number) => {
+    const data = await request('get', '', `postmanagers/newfeeds?page=${page}&show=${show}`);
+    return data;
+}
+
 export const getPostSelf = async (id: string) => {
     const data = await request('get', '', `postmanagers/${id}`)
     return data;

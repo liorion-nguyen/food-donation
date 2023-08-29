@@ -16,7 +16,7 @@ export class PostmanagerService {
         const limit = pageOption?.show;
         const skip = (pageOption?.page - 1) * pageOption?.show;
         const sortOptions: any = {};
-        sortOptions.updatedAt = -1;
+        sortOptions.createAt = -1;
         const postmanagers = await this.postmanagerModel.find().skip(skip).limit(limit).sort(sortOptions).exec();
 
         if (!postmanagers || postmanagers.length === 0) {

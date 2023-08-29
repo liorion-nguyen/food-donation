@@ -60,21 +60,37 @@ export class UserService {
         return user;
     }
 
+    async getSearchUsers(content: string): Promise<User[]> {
+        let query: any = {}; // Điều kiện truy vấn
+
+        if (content) {
+            query.username = { $regex: content, $options: 'i' }; // i: không phân biệt chữ hoa/thường
+        }
+
+        const users = await this.userModel
+            .find(query)
+            .exec();
+        if (!users) {
+            throw new NotFoundException('user not found.');
+        }
+        return users;
+    }
+
     async getUserComment(id: string): Promise<{ fullname: string; avatar: string; id: string; username: string }> {
         const user = await this.userModel.findById(id, 'fullname avatar id username').exec();
-      
+
         if (!user) {
-          throw new NotFoundException('User not found.');
+            throw new NotFoundException('User not found.');
         }
-      
+
         return {
-          fullname: user.fullname,
-          avatar: user.avatar,
-          id: user.id,
-          username: user.username,
+            fullname: user.fullname,
+            avatar: user.avatar,
+            id: user.id,
+            username: user.username,
         };
-      }
-    
+    }
+
     async createUser(user: User): Promise<any> {
         const hash: any = await bcrypt.hash(
             user.password,

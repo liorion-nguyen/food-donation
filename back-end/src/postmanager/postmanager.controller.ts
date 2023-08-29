@@ -24,6 +24,19 @@ export class PostmanagerController {
         return this.postmanagerService.getNumberPostmanager(pageOption);
     }
 
+    @Get('newfeeds')
+    async getNumberNewFeed(
+        @Query() pageOption: {
+            page?: number,
+            show?: number,
+        }
+    ): Promise<{ data: Postmanager[], count: number }> {
+        if (pageOption.page && pageOption.page < 1) {
+            throw new BadRequestException('Invalid page number. Page number must be greater than or equal to 1.');
+        }
+        return this.postmanagerService.getNumberPostmanager(pageOption);
+    }
+
     @Get(':id')
     @UseGuards(AbilitiesGuard)
     @CheckAbilities(new ReadUserAbility())

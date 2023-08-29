@@ -5,6 +5,7 @@ import datahomeReducer from './DataHome';
 import signReducer from './Sign';
 import loadingReducer from './loading';
 import userReducer from './user';
+import profileReducer from './profile';
 
 const store = configureStore({
     reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
         sign: signReducer,
         loading: loadingReducer,
         user: userReducer,
+        profile: profileReducer,
     }
 })
 

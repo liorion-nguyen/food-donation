@@ -27,80 +27,13 @@ import { alertActions } from "../../store/alert";
 import AvatarSmall from "./avatar";
 import { format } from 'date-fns';
 import { getPostSelf, getPostmanagers, updatePostmanagers } from "../../API/postmanager/postmanager.api";
-
-interface OrgId {
-    Location: boolean;
-    Postmanager: boolean;
-    Paymentrecord: boolean;
-    Reward: boolean;
-}
-interface Information {
-    Category: string;
-    Subname: string;
-    Work: string;
-    Education: string;
-    Live: string;
-    Countryside: string;
-    Relationship: string;
-    Join: string;
-    Web: string;
-    Instagram: string;
-    Facebook: string;
-    Gender: string;
-    Datebird: string;
-}
-interface User {
-    _id: string;
-    username: string;
-    password: string;
-    fullname: string;
-    contact: string;
-    avatar: string;
-    cover: string;
-    bio: string;
-    information: Information;
-    isAdmin: boolean;
-    orgId: OrgId;
-    status: boolean;
-}
-
-interface Comment {
-    username: string,
-    content: string,
-    time: string,
-}
-interface Actions {
-    likes: {
-        like: Array<string>,
-        love: Array<string>,
-        haha: Array<string>,
-        sad: Array<string>,
-    },
-    comments: Array<Comment>,
-    shares: Array<string>,
-}
-
-interface Postmanager {
-    _id: string;
-    imgTitle: string;
-    title: string;
-    rasing: number;
-    type: string;
-    location: string;
-    address: string;
-    description: string;
-    releaseDate: string;
-    status: string;
-    author: string;
-    actions: Actions;
-}
-
+import { Information, User } from "../../schema/user";
+import { Postmanager } from "../../schema/post";
 
 export default function Posts() {
-
-    const [posts, setPosts] = useState<Array<Postmanager> | null>(null)
+    
     const dispatch = useDispatch();
-
+    const [posts, setPosts] = useState<Array<Postmanager> | null>(null)
     const user = useSelector((state: any) => state.user.user);
     const [users, setUsers] = useState<User | null>(null);
     const [inpBio, setInpBio] = useState('');
@@ -198,11 +131,11 @@ export default function Posts() {
 
     const [commentUser, setCommentUser] = useState<{ [key: string]: any }>({});
 
-    useEffect(()=> {
+    useEffect(() => {
         if (posts && posts.length > 0) {
             posts.map((post) => {
                 post.actions.comments.map((comment) => {
-                    const fetch = async() => {
+                    const fetch = async () => {
                         const user = await getUserCommnet(comment.username);
                         setCommentUser(prevState => ({
                             ...prevState,
@@ -213,13 +146,13 @@ export default function Posts() {
                                 avatar: user.avatar,
                             }
                         }));
-                    } 
+                    }
                     fetch();
                 })
             })
-        }    
+        }
     }, [posts])
-    
+
     return (
         <>
             {users && posts ? (
@@ -397,7 +330,7 @@ export default function Posts() {
                                                 borderTopLeftRadius: index === 0 ? '20px' : '0px',
                                                 borderTopRightRadius: index === 2 ? '20px' : '0px',
                                                 borderBottomRightRadius: (index === posts.length - 1 && posts.length % 3 === 0) ? '20px' : '0px',
-                                                borderBottomLeftRadius: index === (Math.ceil(posts.length/3) - 1) * 3 ? '20px' : '0px',
+                                                borderBottomLeftRadius: index === (Math.ceil(posts.length / 3) - 1) * 3 ? '20px' : '0px',
                                             }}
                                         />
                                     </ImageListItem>

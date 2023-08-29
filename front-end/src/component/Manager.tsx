@@ -1,9 +1,7 @@
-import { Box, Button, CircularProgress, Dialog, DialogActions, DialogTitle, FormControl, Grid, InputLabel, NativeSelect, Pagination, Skeleton, Slide, TextField } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogTitle, FormControl, Grid, InputLabel, NativeSelect, Pagination, Skeleton, Slide } from "@mui/material";
 import { forwardRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import MoreHoriz from '../Images/table-post/MoreHoriz.svg';
 import IconConfirmDelete from '../Images/table-post/IconConfirmDelete.png'
 import { alertActions } from "../store/alert";
 import { LoadingActions } from "../store/loading";

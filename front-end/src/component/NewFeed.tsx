@@ -5,7 +5,9 @@ import { LoadingActions } from "../store/loading";
 import { StyleBoxMain, StylePExtra, StylePMain } from "../StyleComponent/Post";
 import { TransitionProps } from "@mui/material/transitions";
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import { getNewFeeds } from "../API/location/location.api";
+import Post from "./Post";
+import { getNewFeeds } from "../API/postmanager/postmanager.api";
+import { Link } from 'react-router-dom';
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -15,19 +17,18 @@ const Transition = forwardRef(function Transition(
 ) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-
+interface Location {
+    _id: string;
+    address: string;
+    imgAddress: string;
+    location: string;
+    description: string;
+    addedDate: string;
+    status: string;
+}
 export default function ElementNewFeed() {
     const dispatch = useDispatch();
     const loading = useSelector((state: any) => (state.loading.mode))
-    interface Location {
-        _id: string;
-        address: string;
-        imgAddress: string;
-        location: string;
-        description: string;
-        addedDate: string;
-        status: string;
-    }
     const [listLocations, setListLocations] = useState<Location[]>([]);
     const [pagination, setPagination] = useState(20)
     const [page, setPage] = useState(0)
@@ -90,6 +91,45 @@ export default function ElementNewFeed() {
         }
     }, [page])
 
+    const advertisements = [
+        {
+            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            title: "Liorion",
+            content: "Social networking site",
+            link: "http://liorion0708.000webhostapp.com/NTPTW",
+        },
+        {
+            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            title: "Facebook",
+            content: "Social networking site",
+            link: "http://liorion0708.000webhostapp.com/NTPTW",
+        },
+        {
+            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            title: "Instagram",
+            content: "Social networking site",
+            link: "http://liorion0708.000webhostapp.com/NTPTW",
+        },
+        {
+            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            title: "Liorion",
+            content: "Social networking site",
+            link: "http://liorion0708.000webhostapp.com/NTPTW",
+        },
+        {
+            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            title: "Facebook",
+            content: "Social networking site",
+            link: "http://liorion0708.000webhostapp.com/NTPTW",
+        },
+        {
+            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            title: "Instagram",
+            content: "Social networking site",
+            link: "http://liorion0708.000webhostapp.com/NTPTW",
+        },
+    ]
+
     return (
         <Box
             id="Data"
@@ -103,214 +143,227 @@ export default function ElementNewFeed() {
                 overflowY: 'scroll',
             }}
         >
-            {
-                listLocations?.map((locations: Location, index: number) => (
-                    <Box key={index}
-                        sx={{
-                            width: '80%',
-                            backgroundColor: '#fff',
-                            marginTop: '50px',
-                            display: 'flex',
-                            borderRadius: '10px',
-                            padding: '30px',
-                            justifyContent: 'space-between'
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                width: '20%',
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}
-                        >
-                            <img src={locations.imgAddress}
-                                style={{
-                                    width: '100%',
-                                    maxHeight: '250px'
-                                }}
-                            />
-                        </Box>
-                        <Box
-                            sx={{
-                                width: '75%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center'
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    position: 'relative',
-                                }}
-                            >
-                                <h3>{locations.address}</h3>
-                            </Box>
-                            <StyleBoxMain>
-                                <StylePMain>ID: </StylePMain>
-                                <StylePExtra>{index + 1}</StylePExtra>
-                            </StyleBoxMain>
-                            <StyleBoxMain>
-                                <StylePMain>ADDRESS: </StylePMain>
-                                <StylePExtra>{locations.address}</StylePExtra>
-                            </StyleBoxMain>
-                            <StyleBoxMain>
-                                <StylePMain>LOCATION: </StylePMain>
-                                <StylePExtra>{locations.location}</StylePExtra>
-                            </StyleBoxMain>
-                            <StyleBoxMain >
-                                <StylePMain>DESCRIPTION: </StylePMain>
-                                <StylePExtra>{locations.description}</StylePExtra>
-                            </StyleBoxMain>
-                            <Button variant="contained"
-                                sx={{
-                                    background: locations.status === 'Active' ? '#2ba84a' : '#dd8181',
-                                    width: '100%',
-                                    margin: '7px 0'
-                                }}
-                            >{locations.status}</Button>
-                        </Box>
-                    </Box>
-                ))
-            }
-            <div ref={sentinelRef}></div>
-
-            {
-                listLocations.length < pagination || listLocations.length === 0 ?
-                    (
-                        <Box
-                            sx={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                            }}
-                        >
-                            {
-                                Array.from({ length: 3 }).map((_, index) => (
-                                    <Box key={index}
-                                        sx={{
-                                            width: '80%',
-                                            backgroundColor: '#fff',
-                                            marginTop: '50px',
-                                            display: 'flex',
-                                            borderRadius: '10px',
-                                            padding: '30px',
-                                            justifyContent: 'space-between'
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                width: '20%',
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}
-                                        >
-                                            <Skeleton animation="wave"
+            <Box
+                sx={{
+                    width: '90%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                }}
+            >
+                <Box
+                    sx={{
+                        width: '65%'
+                    }}
+                >
+                    <Post />
+                    {
+                        listLocations.length < pagination || listLocations.length === 0 ?
+                            (
+                                <Box
+                                    sx={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    {
+                                        Array.from({ length: 3 }).map((_, index) => (
+                                            <Box key={index}
                                                 sx={{
-                                                    width: '100%',
-                                                    height: '120%'
-                                                }}
-                                            />
-                                        </Box>
-                                        <Box
-                                            sx={{
-                                                width: '75%',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                justifyContent: 'center'
-                                            }}
-                                        >
-                                            <Box
-                                                sx={{
+                                                    width: '80%',
+                                                    backgroundColor: '#fff',
+                                                    marginTop: '50px',
                                                     display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    position: 'relative',
+                                                    borderRadius: '10px',
+                                                    padding: '30px',
+                                                    justifyContent: 'space-between'
                                                 }}
                                             >
-                                                <Skeleton animation="wave"
+                                                <Box
                                                     sx={{
                                                         width: '20%',
-                                                        height: '20px'
+                                                        display: 'flex',
+                                                        alignItems: 'center'
                                                     }}
-                                                />
+                                                >
+                                                    <Skeleton animation="wave"
+                                                        sx={{
+                                                            width: '100%',
+                                                            height: '120%'
+                                                        }}
+                                                    />
+                                                </Box>
+                                                <Box
+                                                    sx={{
+                                                        width: '75%',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            justifyContent: 'space-between',
+                                                            position: 'relative',
+                                                        }}
+                                                    >
+                                                        <Skeleton animation="wave"
+                                                            sx={{
+                                                                width: '20%',
+                                                                height: '20px'
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                    <StyleBoxMain>
+                                                        <Skeleton animation="wave"
+                                                            sx={{
+                                                                width: '50%',
+                                                                height: '15px'
+                                                            }}
+                                                        />
+                                                    </StyleBoxMain>
+                                                    <StyleBoxMain>
+                                                        <Skeleton animation="wave"
+                                                            sx={{
+                                                                width: '50%',
+                                                                height: '30px'
+                                                            }}
+                                                        />
+                                                    </StyleBoxMain>
+                                                    <StyleBoxMain>
+                                                        <Skeleton animation="wave"
+                                                            sx={{
+                                                                width: '50%',
+                                                                height: '20px'
+                                                            }}
+                                                        />
+                                                    </StyleBoxMain>
+                                                    <StyleBoxMain >
+                                                        <Skeleton animation="wave"
+                                                            sx={{
+                                                                width: '50%',
+                                                                height: '20px'
+                                                            }}
+                                                        />
+                                                    </StyleBoxMain>
+                                                    <Skeleton animation="wave"
+                                                        sx={{
+                                                            width: '100%',
+                                                            height: '30px'
+                                                        }}
+                                                    />
+                                                </Box>
                                             </Box>
-                                            <StyleBoxMain>
-                                                <Skeleton animation="wave"
-                                                    sx={{
-                                                        width: '50%',
-                                                        height: '15px'
-                                                    }}
-                                                />
-                                            </StyleBoxMain>
-                                            <StyleBoxMain>
-                                                <Skeleton animation="wave"
-                                                    sx={{
-                                                        width: '50%',
-                                                        height: '30px'
-                                                    }}
-                                                />
-                                            </StyleBoxMain>
-                                            <StyleBoxMain>
-                                                <Skeleton animation="wave"
-                                                    sx={{
-                                                        width: '50%',
-                                                        height: '20px'
-                                                    }}
-                                                />
-                                            </StyleBoxMain>
-                                            <StyleBoxMain >
-                                                <Skeleton animation="wave"
-                                                    sx={{
-                                                        width: '50%',
-                                                        height: '20px'
-                                                    }}
-                                                />
-                                            </StyleBoxMain>
-                                            <Skeleton animation="wave"
-                                                sx={{
-                                                    width: '100%',
-                                                    height: '30px'
+                                        ))
+                                    }
+                                </Box>
+                            ) : (
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        marginTop: '20px',
+                                    }}
+                                >
+                                    <TaskAltIcon
+                                        sx={{
+                                            fontSize: '99px',
+                                            color: '#f1ab3d'
+                                        }}
+                                    ></TaskAltIcon>
+                                    <h3
+                                        style={{
+                                            lineHeight: 'var(--base-line-clamp-line-height)',
+                                            fontWeight: 400,
+                                            margin: '0',
+                                            fontSize: '25px'
+                                        }}
+                                    >You're all caught up</h3>
+                                    <p
+                                        style={{
+                                            color: '#737373',
+                                            fontSize: '16px'
+                                        }}
+                                    >You have seen all the latest posts.</p>
+                                </Box>
+                            )
+                    }
+                </Box>
+                <Box
+                    sx={{
+                        width: '20%',
+                        height: '100%',
+                        overflow: 'auto',
+                        position: 'fixed',
+                        top: '97px',
+                        right: '0'
+                    }}
+                >
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px',
+                            overflow: 'auto',
+                            height: '110%',
+                        }}
+                    >
+                        <h3
+                            style={{
+                                fontWeight: 600,
+                                fontSize: '19px',
+                                color: '#6b6969',
+                            }}
+                        >Sponsored by</h3>
+                        {
+                            advertisements.map((advertisement, index) => (
+                                <a href={advertisement.link} target="_blank" rel="noopener noreferrer">
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            padding: '7px',
+                                            ':hover': {
+                                                borderTopLeftRadius: '10px',
+                                                background: '#80808036',
+                                            }
+                                        }}
+                                    >
+                                        <Box>
+                                            <img src={advertisement.img}
+                                                style={{
+                                                    borderRadius: '10px',
+                                                    width: '130px',
+                                                    height: '130px'
                                                 }}
                                             />
                                         </Box>
+                                        <Box>
+                                            <h3
+                                                style={{
+                                                    fontWeight: 500,
+                                                }}
+                                            >{advertisement.title}</h3>
+                                            <p
+                                                style={{
+                                                    fontSize: '12px',
+                                                    color: '#484e48'
+                                                }}
+                                            >{advertisement.content}</p>
+                                        </Box>
                                     </Box>
-                                ))
-                            }
-                        </Box>
-                    ) : (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                marginTop: '20px',
-                            }}
-                        >
-                            <TaskAltIcon
-                                sx={{
-                                    fontSize: '99px',
-                                    color: '#f1ab3d'
-                                }}
-                            ></TaskAltIcon>
-                            <h3
-                                style={{
-                                    lineHeight: 'var(--base-line-clamp-line-height)',
-                                    fontWeight: 400,
-                                    margin: '0',
-                                    fontSize: '25px'
-                                }}
-                            >You're all caught up</h3>
-                            <p
-                                style={{
-                                    color: '#737373',
-                                    fontSize: '16px'
-                                }}
-                            >You have seen all the latest posts.</p>
-                        </Box>
-                    )
-            }
+                                </a>
+
+                            ))
+                        }
+                    </Box>
+                </Box>
+            </Box>
+            <div ref={sentinelRef}></div>
 
         </Box >
     );

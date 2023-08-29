@@ -44,10 +44,19 @@ export class UserController {
   }
 
   @Get(':id')
+  @UseGuards(AbilitiesGuard)
+  @CheckAbilities(new ReadUserAbility())
   async getUser(
     @Param('id') id: string,
   ): Promise<User> {
     return this.userService.getUser(id);
+  }
+
+  @Get('search/:content')
+  async getSearch(
+    @Param('content') content: string
+  ): Promise<User[]> {
+    return this.userService.getSearchUsers(content);
   }
 
   @Get('comment/:id')

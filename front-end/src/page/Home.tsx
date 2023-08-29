@@ -55,25 +55,25 @@ export default function Home(): JSX.Element {
                     content: "Location",
                 })
             }
-            if (users.orgId.Postmanager) {
+            if (users.orgId.Postmanager && !extraNavLeft.some(navItem => navItem.content === 'Postmanager')) {
                 extraNavLeft.push({
                     icon: PostManager,
                     content: "Postmanager",
                 })
             }
-            if (users.orgId.Paymentrecord) {
+            if (users.orgId.Paymentrecord && !extraNavLeft.some(navItem => navItem.content === 'Paymentrecord')) {
                 extraNavLeft.push({
                     icon: IconDonation,
                     content: "Paymentrecord",
                 })
             }
-            if (users.orgId.Reward) {
+            if (users.orgId.Reward && !extraNavLeft.some(navItem => navItem.content === 'Reward')) {
                 extraNavLeft.push({
                     icon: Reward,
                     content: "Reward",
                 })
             }
-            if (users.isAdmin) {
+            if (users.isAdmin && !extraNavLeft.some(navItem => navItem.content === 'Manager')) {      
                 extraNavLeft.push({
                     icon: Manager,
                     content: "Manager",

@@ -6,11 +6,6 @@ export const getLocations = async (page: number, show: number) => {
     return data;
 }
 
-export const getNewFeeds = async (page: number, show: number) => {
-    const data = await request('get', '', `locations/newfeeds?page=${page}&show=${show}`);
-    return data;
-}
-
 export const createLocations = async (content: any) => {
     const data = await request('post', content, `locations`)
     return data;

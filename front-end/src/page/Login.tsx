@@ -33,7 +33,7 @@ const Login: React.FC = () => {
             const encode = Cookies.get('jwt') || "liorion";
 
             const user = await decodedAT(encode)
-            
+
             if (user.error === "Invalid Access Token") {
                 Cookies.remove('jwt');
             }
@@ -106,7 +106,11 @@ const Login: React.FC = () => {
         event.preventDefault();
     };
     return (
-        <Box style={{ height: '100vh' }}>
+        <Box
+            sx={{
+                height: '100vh',
+            }}
+        >
             <Grid container>
                 <Grid item md={7}
                     sx={{

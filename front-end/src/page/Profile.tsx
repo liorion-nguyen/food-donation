@@ -22,46 +22,12 @@ import { getUser, updateUsers } from "../API/user/user.api";
 import { alertActions } from "../store/alert";
 import { LoadingActions } from "../store/loading";
 import AvatarSmall from "../component/Profile/avatar";
+import { User } from "../schema/user";
 
 
 const Cookies = require('js-cookie');
 
 export default function Profile() {
-    interface OrgId {
-        Location: boolean;
-        Postmanager: boolean;
-        Paymentrecord: boolean;
-        Reward: boolean;
-    }
-    interface Information {
-        Category: string;
-        Subname: string;
-        Work: string;
-        Education: string;
-        Live: string;
-        Countryside: string;
-        Relationship: string;
-        Join: string;
-        Web: string;
-        Instagram: string;
-        Facebook: string;
-        Gender: string;
-        Datebird: string;
-    }
-    interface User {
-        _id: string;
-        username: string;
-        password: string;
-        fullname: string;
-        contact: string;
-        avatar: string;
-        cover: string;
-        bio: string;
-        information: Information;
-        isAdmin: boolean;
-        orgId: OrgId;
-        status: boolean;
-    }
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
