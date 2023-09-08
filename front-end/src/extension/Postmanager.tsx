@@ -72,6 +72,8 @@ export default function Postmanager() {
         setFontFamily(event.target.value);
     };
 
+    const users = useSelector((state: any) => state.user.user)
+
     const Nextstep = async () => {
         setLoading(true)
 
@@ -101,7 +103,19 @@ export default function Postmanager() {
                                 address: inpAddress,
                                 description: inpDescription,
                                 releaseDate: getDate(),
-                                status: 'Online'
+                                status: 'Online',
+                                author: users._id,
+                                actions: {
+                                    likes: {
+                                        like: [],
+                                        love: [],
+                                        haha: [],
+                                        sad: [],
+                                        wow: [],
+                                    },
+                                    comments: [],
+                                    shares: [],
+                                }
                             });
                             dispatch(DataHomeActions.getPostmanager());
                         }
@@ -187,6 +201,9 @@ export default function Postmanager() {
         <Box
             style={{
                 padding: '30px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '15px'
             }}
         >
             <Box
@@ -240,7 +257,13 @@ export default function Postmanager() {
                     }}
                 />
             </Box>
-            <Box>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '15px'
+                }}
+            >
                 <p
                     style={{
                         fontWeight: 500,
@@ -298,14 +321,14 @@ export default function Postmanager() {
                 </Box>
 
                 <Box
-                    style={{
+                    sx={{
                         width: '100%',
                         display: 'flex',
                         justifyContent: 'space-between',
                     }}
                 >
                     <Box
-                        style={{
+                        sx={{
                             width: '48%',
                         }}
                     >

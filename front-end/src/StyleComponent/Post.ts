@@ -1,5 +1,6 @@
 import styled from "@emotion/styled"
 import { Box } from "@mui/material"
+import { all } from "axios"
 
 export const BoxPostmanger = styled(Box)({
     width: '100%',
@@ -49,4 +50,23 @@ export const StyleBoxMain = styled(Box)({
     display: 'flex',
     justifyContent: 'space-between',
     padding: '7px 0'
+})
+
+export const StyleImgIcon = styled('img')({
+    width: '40px',
+    height: '40px',
+    ':hover': {
+        scale: '1.3',
+        transition: 'transform 0.3s',
+    }
+})
+
+export const StyleImgIcon2 = styled('img')({
+    width: '23px',
+    height: '23px',
+})
+
+export const StyleImgIcon3 = styled('img')({
+    width: '18px',
+    height: '18px',
 })

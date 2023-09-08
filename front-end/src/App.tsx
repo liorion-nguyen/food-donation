@@ -81,7 +81,7 @@ function App(): JSX.Element {
           element={<SignUp />}
         />
         <Route
-          path="Profile"
+          path="/Profile"
           element={<Profile />}
         />
         <Route

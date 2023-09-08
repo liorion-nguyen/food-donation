@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, Dialog } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { prifileActions } from '../../store/profile';
+import { profileActions } from '../../store/profile';
 import { getUser, updateUsers } from '../../API/user/user.api';
 import { userActions } from '../../store/user';
 import { alertActions } from '../../store/alert';
@@ -85,7 +85,7 @@ const Province: React.FC = () => {
     const dispatch = useDispatch();
 
     const handleClose = () => {
-        dispatch(prifileActions.GetProvince({
+        dispatch(profileActions.GetProvince({
             open: false,
             mode: ''
         }))

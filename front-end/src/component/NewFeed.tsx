@@ -8,6 +8,10 @@ import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import Post from "./Post";
 import { getNewFeeds } from "../API/postmanager/postmanager.api";
 import { Link } from 'react-router-dom';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import { BoxStyle } from "../StyleComponent/Profile";
+import AvatarSmall from "./Profile/avatar";
+import { DialogHomeActions } from "../store/DialogHome";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -33,6 +37,7 @@ export default function ElementNewFeed() {
     const [pagination, setPagination] = useState(20)
     const [page, setPage] = useState(0)
     const [show, setShow] = useState(20)
+    const search = useSelector((state: any) => (state.dataHome.search));
 
     const sentinelRef = useRef(null);
 
@@ -47,6 +52,7 @@ export default function ElementNewFeed() {
             if (entries[0].isIntersecting) {
                 const fetchData = async () => {
                     dispatch(LoadingActions.showLoading());
+
                     setPage(prev => {
                         return prev + 1;
                     });
@@ -73,9 +79,7 @@ export default function ElementNewFeed() {
     useEffect(() => {
         const fetch = async () => {
             if (page !== 0) {
-                const dataListLocations = await getNewFeeds(page === 0 ? 1 : page, show)
-                console.log(dataListLocations);
-
+                const dataListLocations = await getNewFeeds(page === 0 ? 1 : page, show, search)
                 if (dataListLocations !== "Error") {
                     setListLocations((prev) => {
                         const newData = dataListLocations.data;
@@ -86,49 +90,59 @@ export default function ElementNewFeed() {
                 }
             }
         }
-        if (listLocations.length < pagination || listLocations.length === 0) {
+        if (listLocations.length < pagination || listLocations.length === 0 || search != '') {
             fetch()
         }
-    }, [page])
+    }, [page, search])
+
+    const users = useSelector((state: any) => state.user.user)
 
     const advertisements = [
         {
-            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSc5ihQmo9XVtH0wle7g9eM0egh3zEnFjgvA&usqp=CAU",
+            title: "Twitter",
+            content: "Join the conversation on Twitter - where news and ideas are shared.",
+            link: "http://twitter.com",
+        },
+        {
+            img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPIGLh6elCvF9FVFukaxnTFtsqZpyEdfsLQA&usqp=CAU",
+            title: "LinkedIn",
+            content: "Build your professional network on LinkedIn - the world's largest business network.",
+            link: "http://linkedin.com",
+        },
+        {
+            img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdv1AlXnuyP4-eWBpcQENrHlU4XHzwIb9X8A&usqp=CAU",
+            title: "Pinterest",
+            content: "Discover inspiration and ideas on Pinterest - the visual discovery and bookmarking platform.",
+            link: "http://pinterest.com",
+        },
+        {
+            img: "https://liorion0708.000webhostapp.com/NTPTW/images/logo_0.png",
             title: "Liorion",
-            content: "Social networking site",
+            content: "Connect with friends and share your life on Liorion - the social networking site.",
             link: "http://liorion0708.000webhostapp.com/NTPTW",
         },
         {
-            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            img: "https://limosa.vn/wp-content/uploads/2022/08/phong-to-man-hinh-facebook-tren-may-tinh.jpg",
             title: "Facebook",
-            content: "Social networking site",
-            link: "http://liorion0708.000webhostapp.com/NTPTW",
+            content: "Join the world's largest social network and connect with people from all over the globe.",
+            link: "http://facebook.com",
         },
         {
-            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
+            img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX2Jm9sxqMl5sN7wQhWMhiiWayALyZ7iu8ag&usqp=CAU",
             title: "Instagram",
-            content: "Social networking site",
-            link: "http://liorion0708.000webhostapp.com/NTPTW",
+            content: "Capture and share the world's moments on Instagram - the photo and video sharing platform.",
+            link: "http://instagram.com",
         },
-        {
-            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
-            title: "Liorion",
-            content: "Social networking site",
-            link: "http://liorion0708.000webhostapp.com/NTPTW",
-        },
-        {
-            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
-            title: "Facebook",
-            content: "Social networking site",
-            link: "http://liorion0708.000webhostapp.com/NTPTW",
-        },
-        {
-            img: "https://i.pinimg.com/736x/f7/4c/2c/f74c2c1d36987fd5246c1899e3db110b.jpg",
-            title: "Instagram",
-            content: "Social networking site",
-            link: "http://liorion0708.000webhostapp.com/NTPTW",
-        },
-    ]
+    ];
+
+    const handleCreatePost = () => {
+        dispatch(DialogHomeActions.showDialog({
+            page: 'Postmanager',
+            mode: 'Create',
+            data: '',
+        }))
+    }
 
     return (
         <Box
@@ -152,9 +166,79 @@ export default function ElementNewFeed() {
             >
                 <Box
                     sx={{
-                        width: '65%'
+                        width: '65%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '30px'
                     }}
                 >
+                    <BoxStyle
+                        sx={{
+                            gap: '10px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '15px',
+                                height: '40px',
+                            }}>
+                            <AvatarSmall value={users.avatar} size={40} />
+                            <Button
+                                sx={{
+                                    background: '#f0f2f5',
+                                    color: '#606266',
+                                    borderRadius: '20px',
+                                    width: '90%',
+                                    height: '100%'
+                                }}
+                                onClick={handleCreatePost}
+                            >What are you thinking?</Button>
+                        </Box>
+
+                        <hr
+                            style={{
+                                height: '1px',
+                                width: '100%',
+                                border: 0,
+                                background: '#8080804d',
+                            }}
+                        />
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                width: '100%',
+                                ':hover': {
+                                    background: '#babbc43d',
+                                    borderRadius: '20px',
+                                },
+                                justifyContent: 'center',
+                                padding: '8px 0'
+                            }}
+                            onClick={handleCreatePost}
+                        >
+                            <PhotoLibraryIcon
+                                sx={{
+                                    color: '#44be62',
+                                    fontSize: '30px'
+                                }}
+                            ></PhotoLibraryIcon>
+                            <p
+                                style={{
+                                    color: '#606266',
+                                    fontWeight: '500',
+                                    margin: '0'
+                                }}
+                            >Picture/Video</p>
+                        </Box>
+                    </BoxStyle>
                     <Post />
                     {
                         listLocations.length < pagination || listLocations.length === 0 ?
@@ -171,7 +255,7 @@ export default function ElementNewFeed() {
                                         Array.from({ length: 3 }).map((_, index) => (
                                             <Box key={index}
                                                 sx={{
-                                                    width: '80%',
+                                                    width: 'calc(100% - 60px)',
                                                     backgroundColor: '#fff',
                                                     marginTop: '50px',
                                                     display: 'flex',
@@ -294,7 +378,7 @@ export default function ElementNewFeed() {
                 </Box>
                 <Box
                     sx={{
-                        width: '20%',
+                        width: '25%',
                         height: '100%',
                         overflow: 'auto',
                         position: 'fixed',
@@ -320,7 +404,7 @@ export default function ElementNewFeed() {
                         >Sponsored by</h3>
                         {
                             advertisements.map((advertisement, index) => (
-                                <a href={advertisement.link} target="_blank" rel="noopener noreferrer">
+                                <a href={advertisement.link} target="_blank" rel="noopener noreferrer" key={index}>
                                     <Box
                                         sx={{
                                             display: 'flex',
@@ -338,7 +422,8 @@ export default function ElementNewFeed() {
                                                 style={{
                                                     borderRadius: '10px',
                                                     width: '130px',
-                                                    height: '130px'
+                                                    height: '130px',
+                                                    objectFit: 'cover',
                                                 }}
                                             />
                                         </Box>

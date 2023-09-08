@@ -12,7 +12,7 @@ import { getUser, updateUsers } from '../../API/user/user.api';
 import { alertActions } from '../../store/alert';
 import { userActions } from '../../store/user';
 import Province from './province';
-import { prifileActions } from '../../store/profile';
+import { profileActions } from '../../store/profile';
 import { DateField } from '@mui/x-date-pickers/DateField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -529,7 +529,7 @@ export default function Introduce() {
                                             </Box>
                                             <BoxStyleTitle
                                                 onClick={() => {
-                                                    dispatch(prifileActions.GetProvince({
+                                                    dispatch(profileActions.GetProvince({
                                                         open: true,
                                                         mode: "live"
                                                     }))
@@ -569,7 +569,7 @@ export default function Introduce() {
                                             </Box>
                                             <BoxStyleTitle
                                                 onClick={() => {
-                                                    dispatch(prifileActions.GetProvince({
+                                                    dispatch(profileActions.GetProvince({
                                                         open: true,
                                                         mode: "countryside"
                                                     }))

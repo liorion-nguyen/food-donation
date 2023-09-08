@@ -29,12 +29,16 @@ import { format } from 'date-fns';
 import { getPostSelf, getPostmanagers, updatePostmanagers } from "../../API/postmanager/postmanager.api";
 import { Information, User } from "../../schema/user";
 import { Postmanager } from "../../schema/post";
+import { DialogHomeActions } from "../../store/DialogHome";
 
 export default function Posts() {
-    
+
     const dispatch = useDispatch();
     const [posts, setPosts] = useState<Array<Postmanager> | null>(null)
     const user = useSelector((state: any) => state.user.user);
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const id = searchParams.get('id') || user._id;
     const [users, setUsers] = useState<User | null>(null);
     const [inpBio, setInpBio] = useState('');
     const [inpInfomation, setInpInfomation] = useState<Information | null>(null);
@@ -88,8 +92,16 @@ export default function Posts() {
                     console.log(post);
                 }
                 await updatePostmanagers(post._id, post)
-                setPosts(await getPostSelf(user._id))
+                setPosts(await getPostSelf(id))
         }
+    }
+
+    const handleCreatePost = () => {
+        dispatch(DialogHomeActions.showDialog({
+            page: 'Postmanager',
+            mode: 'Create',
+            data: '',
+        }))
     }
 
     const [commentContents, setCommentContents] = useState<{ [key: string]: string }>({});
@@ -108,7 +120,7 @@ export default function Posts() {
             time: formattedTime,
         })
         await updatePostmanagers(post._id, post)
-        setPosts(await getPostSelf(user._id))
+        setPosts(await getPostSelf(id))
     };
 
     const updateCommentContent = (postId: string, newContent: string) => {
@@ -121,7 +133,7 @@ export default function Posts() {
     useEffect(() => {
         setUsers(user);
         const fetchData = async () => {
-            const post = await getPostSelf(user._id);
+            const post = await getPostSelf(id);
             setPosts(post);
         };
         fetchData();
@@ -243,7 +255,7 @@ export default function Posts() {
                                                     Updateuser.bio = inpBio;
                                                     try {
                                                         await updateUsers(users._id, Updateuser);
-                                                        const user = await getUser(users._id);
+                                                        const user = await getUser(id);
                                                         dispatch(userActions.setUser(user))
                                                         dispatch(alertActions.setColorGreen());
                                                         dispatch(alertActions.setContentAlert(`Cập nhật thông tin thành công!`));
@@ -373,6 +385,7 @@ export default function Posts() {
                                         width: '90%',
                                         height: '100%'
                                     }}
+                                    onClick={handleCreatePost}
                                 >What are you thinking?</Button>
                             </Box>
 
@@ -397,6 +410,7 @@ export default function Posts() {
                                     justifyContent: 'center',
                                     padding: '8px 0'
                                 }}
+                                onClick={handleCreatePost}
                             >
                                 <PhotoLibraryIcon
                                     sx={{

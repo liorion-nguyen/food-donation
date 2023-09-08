@@ -8,7 +8,7 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Fragment, useEffect, useState } from "react";
 import Logout from '@mui/icons-material/Logout';
 import Settings from '@mui/icons-material/Settings';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { decodedAT } from "../API/decodedAccessToken/decodedAccessToken.api";
 import { useDispatch, useSelector } from "react-redux";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -28,10 +28,13 @@ import { User } from "../schema/user";
 const Cookies = require('js-cookie');
 
 export default function Profile() {
-
+    
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.user.user)
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const id = searchParams.get('id') || user._id;
     const [users, setUsers] = useState<User | null>(null);
 
     useEffect(() => {
@@ -42,14 +45,14 @@ export default function Profile() {
         else {
             const decoded = async () => {
                 const user = await decodedAT(Cookies.get('jwt'))
-
+                
                 if (user.error === "Invalid Access Token") {
                     Cookies.remove('jwt');
                     navigate('/Login');
                 }
                 else {
-                    const u = await getUser(user.user._id);
-                    dispatch(userActions.setUser(u))
+                    const u = await getUser(id);
+                    dispatch(userActions.setUser(user.user))
                     setUsers(u)
                     dispatch(LoadingActions.hideLoading());
                 }
@@ -78,11 +81,8 @@ export default function Profile() {
         setValue(newValue);
     };
 
-    useEffect(() => {
-        setUsers(user)
-    }, [user])
-
-    const handleLoadFileAvatar = (mode: string) => {
+    function handleLoadFileAvatar(mode: string) {
+        console.log("hello");
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/*';
@@ -265,7 +265,7 @@ export default function Profile() {
                                                     aria-haspopup="true"
                                                     aria-expanded={open ? 'true' : undefined}
                                                 >
-                                                    <AvatarSmall value={users.avatar} size={40} />
+                                                    <AvatarSmall value={user.avatar} size={40} />
                                                 </IconButton>
                                             </Tooltip>
                                         </Box>

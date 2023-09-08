@@ -18,6 +18,7 @@ export class AuthService {
         const user = await this.userService.findOne(
             username,
         );
+        
 
         const hash = await bcrypt.compare(
             password,

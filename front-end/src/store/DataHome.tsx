@@ -9,8 +9,15 @@ const DataHomeSlice = createSlice({
         Postmanager: true,
         Paymentrecord: true,
         User: true,
+        search: "",
     },
     reducers: {
+        setSearch(state, action) {
+            return {
+                ...state,
+                search: action.payload,
+            }
+        },
         setPage(state, action) {
             return {
                 ...state,

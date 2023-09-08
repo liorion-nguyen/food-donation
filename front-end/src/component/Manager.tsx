@@ -36,6 +36,7 @@ export default function ElementManager() {
     const [error, setError] = useState(false)
     const [ListUsers, setListUsers] = useState<User[] | undefined>(undefined);
     const users = useSelector((state: any) => state.dataHome.User)
+    const search = useSelector((state: any) => state.dataHome.search)
     const [pagination, setPagination] = useState(1)
     const [page, setPage] = useState(1)
     const [show, setShow] = useState(5)
@@ -43,7 +44,9 @@ export default function ElementManager() {
     useEffect(() => {
         const fetchData = async () => {
             dispatch(LoadingActions.showLoading());
-            const dataListUsers = await getUsers(page, show);
+            const dataListUsers = await getUsers(page, show, search);
+            console.log(dataListUsers);
+            
             if (dataListUsers === "Error") {
                 setError(true);
                 dispatch(alertActions.setColorWrong());
@@ -57,7 +60,7 @@ export default function ElementManager() {
             dispatch(LoadingActions.hideLoading());
         };
         fetchData();
-    }, [users, page, show]);
+    }, [users, page, show, search]);
 
     const [open, setOpen] = useState({
         mode: false,
@@ -88,7 +91,7 @@ export default function ElementManager() {
         const response = await deleteUser(userId);
         if (response !== "Error") {
             const fetchData = async () => {
-                const dataListUsers = await getUsers(page, show);
+                const dataListUsers = await getUsers(page, show, search);
                 setListUsers(dataListUsers.data);
                 setPagination(dataListUsers.count);
                 dispatch(alertActions.setContentAlert(`Bạn đã xoá User thành công!`));

@@ -7,6 +7,7 @@ interface Actions {
         love: Array<string>,
         haha: Array<string>,
         sad: Array<string>,
+        wow: Array<string>,
     },
     comments: Array<object>,
     shares: Array<string>,

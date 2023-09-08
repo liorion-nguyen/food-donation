@@ -12,24 +12,42 @@ export class PostmanagerService {
     async getNumberPostmanager(pageOption: {
         page?: number,
         show?: number,
+        search?: string,
     }): Promise<{ data: Postmanager[], count: number }> {
         const limit = pageOption?.show;
         const skip = (pageOption?.page - 1) * pageOption?.show;
         const sortOptions: any = {};
         sortOptions.createAt = -1;
-        const postmanagers = await this.postmanagerModel.find().skip(skip).limit(limit).sort(sortOptions).exec();
 
+        const query: any = {};
+
+        if (pageOption.search) {
+            const searchRegex = new RegExp(pageOption.search, 'i');
+            query.$or = [
+                { description: searchRegex },
+                { location: searchRegex },
+                { address: searchRegex },
+            ];
+        }
+        const postmanagers = await this.postmanagerModel
+            .find(query) 
+            .skip(skip)
+            .limit(limit)
+            .sort(sortOptions)
+            .exec();
         if (!postmanagers || postmanagers.length === 0) {
             throw new NotFoundException('No postmanagers found in the requested page.');
         }
 
-        const totalCount = await this.postmanagerModel.countDocuments(); // Lấy tổng số lượng bản ghi trong collection
+        // Đếm tổng số lượng bản ghi trong collection dựa trên truy vấn
+        const totalCount = await this.postmanagerModel.countDocuments(query);
 
         return {
             data: postmanagers,
             count: totalCount,
         };
     }
+
 
     async getPostSelf(author: string) {
         const postmanager = await this.postmanagerModel.find({ author });

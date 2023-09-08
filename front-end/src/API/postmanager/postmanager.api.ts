@@ -5,8 +5,8 @@ export const getPostmanagers = async (page: number, show: number) => {
     return data;
 }
 
-export const getNewFeeds = async (page: number, show: number) => {
-    const data = await request('get', '', `postmanagers/newfeeds?page=${page}&show=${show}`);
+export const getNewFeeds = async (page: number, show: number, search: string) => {
+    const data = await request('get', '', `postmanagers/newfeeds?page=${page}&show=${show}&search=${search}`);
     return data;
 }
 
