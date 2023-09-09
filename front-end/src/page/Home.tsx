@@ -381,7 +381,7 @@ export default function Home(): JSX.Element {
                                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                             >
                                 <MenuItem onClick={() => {
-                                    window.location.href = "/Profile"
+                                    window.location.href = `/Profile?id=${users._id}`;
                                     handleClose();
                                 }}>
                                     <AvatarSmall value={users.avatar} size={40} /> Profile

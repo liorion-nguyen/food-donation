@@ -1,0 +1,87 @@
+.card .row {
+  height: 100vh;
+}
+
+.chat-online {
+  color: #34ce57
+}
+
+.chat-offline {
+  color: #e4606d
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 150px);
+  overflow-y: scroll
+}
+
+.chat-message-left,
+.chat-message-right {
+  display: flex;
+  flex-shrink: 0
+}
+
+.chat-message-left {
+  margin-right: auto
+}
+
+.chat-message-right {
+  flex-direction: row-reverse;
+  margin-left: auto
+}
+
+.py-3 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.px-4 {
+  padding-right: 1.5rem !important;
+  padding-left: 1.5rem !important;
+}
+
+.ml-3 {
+  margin-left: 12px;
+}
+
+.mr-1 {
+  margin-right: 8px;
+}
+
+.mr-3 {
+  margin-right: 15px;
+}
+
+.flex-grow-0 {
+  flex-grow: 0 !important;
+  position: absolute;
+  bottom: 0;
+  width: inherit;
+}
+
+.border-top {
+  border-top: 1px solid #dee2e6 !important;
+}
+
+.border-right {
+  border-right: 1px solid #dee2e6 !important;
+}
+
+.hover:hover {
+  background: #cececd29;
+  border-radius: 10px;
+}
+
+.text-nowrap {
+  max-width: 30px;
+}
+
+.width70 {
+  max-width: 80vh;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+}

@@ -32,6 +32,8 @@ export default function Profile() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.user.user)
+    console.log(user);
+    
     const url = new URL(window.location.href);
     const searchParams = new URLSearchParams(url.search);
     const id = searchParams.get('id') || user._id;
@@ -371,7 +373,7 @@ export default function Profile() {
                                             bottom: '20px',
                                             right: '30px',
                                             zIndex: '1',
-                                            display: 'flex',
+                                            display: id === user._id ? 'flex' : 'none',
                                             alignItems: 'center',
                                             background: '#6c6a6ac2',
                                             padding: '7px',
@@ -421,7 +423,8 @@ export default function Profile() {
                                                 right: '10px',
                                                 background: '#e4e6ea',
                                                 borderRadius: '50%',
-                                                padding: '7px'
+                                                padding: '7px',
+                                                display: id === user._id ? 'flex' : 'none'
                                             }}
                                             onClick={() => {
                                                 handleLoadFileAvatar('Avatar')

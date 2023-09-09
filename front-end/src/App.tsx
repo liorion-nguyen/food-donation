@@ -13,6 +13,7 @@ import Login from './page/Login';
 
 import Logo from './Images/home/main/Logo.svg'
 import Profile from './page/Profile';
+import { MessageAI } from './page/MessageAI';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL1I5MSnhqc4DiMDQI6BaO94LL6HBL4J0",
@@ -83,6 +84,10 @@ function App(): JSX.Element {
         <Route
           path="/Profile"
           element={<Profile />}
+        />
+        <Route
+          path="/MessageAI"
+          element={<MessageAI />}
         />
         <Route
           path="*"

@@ -2,13 +2,9 @@ import { Backdrop, Box, CircularProgress, Dialog, Grid, LinearProgress, Textarea
 import AvatarSmall from "./Profile/avatar";
 import SendIcon from '@mui/icons-material/Send';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import LikeTrue from '@mui/icons-material/ThumbUp';
 import CommentFalse from '@mui/icons-material/ChatBubbleOutline';
 import ShareFalse from '@mui/icons-material/IosShare';
 import LikeFalse from '@mui/icons-material/ThumbUpOffAlt';
-import LoveTrue from '@mui/icons-material/Favorite';
-import LoveFalse from '@mui/icons-material/FavoriteBorder';
-import HahaTrue from '@mui/icons-material/EmojiEmotions'
 import { BoxStatusStyle, BoxStyle } from "../StyleComponent/Profile";
 import { Postmanager } from "../schema/post";
 import { useEffect, useState } from "react";
@@ -27,7 +23,6 @@ import Sad from "../Images/post/sad.png";
 import Wow from "../Images/post/wow.png";
 import Like from "../Images/post/like.png";
 import { StyleImgIcon, StyleImgIcon2, StyleImgIcon3 } from "../StyleComponent/Post";
-import { profileActions } from "../store/profile";
 
 export default function Post() {
     const dispatch = useDispatch();
