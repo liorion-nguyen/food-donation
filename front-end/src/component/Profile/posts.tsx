@@ -29,12 +29,16 @@ import { format } from 'date-fns';
 import { getPostSelf, getPostmanagers, updatePostmanagers } from "../../API/postmanager/postmanager.api";
 import { Information, User } from "../../schema/user";
 import { Postmanager } from "../../schema/post";
+import { DialogHomeActions } from "../../store/DialogHome";
 
 export default function Posts() {
-    
+
     const dispatch = useDispatch();
     const [posts, setPosts] = useState<Array<Postmanager> | null>(null)
     const user = useSelector((state: any) => state.user.user);
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const id = searchParams.get('id') || user._id;
     const [users, setUsers] = useState<User | null>(null);
     const [inpBio, setInpBio] = useState('');
     const [inpInfomation, setInpInfomation] = useState<Information | null>(null);
@@ -88,8 +92,16 @@ export default function Posts() {
                     console.log(post);
                 }
                 await updatePostmanagers(post._id, post)
-                setPosts(await getPostSelf(user._id))
+                setPosts(await getPostSelf(id))
         }
+    }
+
+    const handleCreatePost = () => {
+        dispatch(DialogHomeActions.showDialog({
+            page: 'Postmanager',
+            mode: 'Create',
+            data: '',
+        }))
     }
 
     const [commentContents, setCommentContents] = useState<{ [key: string]: string }>({});
@@ -108,7 +120,7 @@ export default function Posts() {
             time: formattedTime,
         })
         await updatePostmanagers(post._id, post)
-        setPosts(await getPostSelf(user._id))
+        setPosts(await getPostSelf(id))
     };
 
     const updateCommentContent = (postId: string, newContent: string) => {
@@ -118,10 +130,31 @@ export default function Posts() {
         }));
     };
 
+    const [authorUser, setAuthortUser] = useState<{ [key: string]: any }>({});
+    useEffect(() => {
+        if (posts && posts.length > 0) {
+            posts.map((post) => {
+                const fetch = async () => {
+                    const authorUser = await getUserCommnet(post.author);
+                    setAuthortUser(prevState => ({
+                        ...prevState,
+                        [authorUser.id]: {
+                            id: authorUser.id,
+                            fullname: authorUser.fullname,
+                            username: authorUser.username,
+                            avatar: authorUser.avatar,
+                        }
+                    }));
+                }
+                fetch();
+            })
+        }
+    }, [posts])
+
     useEffect(() => {
         setUsers(user);
         const fetchData = async () => {
-            const post = await getPostSelf(user._id);
+            const post = await getPostSelf(id);
             setPosts(post);
         };
         fetchData();
@@ -195,8 +228,8 @@ export default function Posts() {
                                     }}
                                 >{user.bio}</p>
                             ) : null}
-                            {
-                                !modeBio ?
+                            {user._id === users._id ? (
+                                !modeBio ? (
                                     <Button
                                         sx={{
                                             background: '#e4e6ea',
@@ -206,9 +239,13 @@ export default function Posts() {
                                         onClick={() => {
                                             setModeBio(!modeBio);
                                         }}
-                                    >{inpBio === '' ? 'Add bio' : 'Change bio'}</Button> :
+                                    >
+                                        {inpBio === '' ? 'Add bio' : 'Change bio'}
+                                    </Button>
+                                ) : (
                                     <Box>
-                                        <TextareaAutosize placeholder="description of the version"
+                                        <TextareaAutosize
+                                            placeholder="description of the version"
                                             style={{
                                                 width: '94%',
                                                 border: '1px solid #ccd0d4',
@@ -217,51 +254,55 @@ export default function Posts() {
                                                 padding: '3%',
                                                 resize: 'none',
                                                 background: '#e4e6e9',
-                                                fontSize: '16px'
+                                                fontSize: '16px',
                                             }}
                                             value={inpBio}
                                             onChange={(e) => {
-                                                setInpBio(e.target.value)
+                                                setInpBio(e.target.value);
                                             }}
                                         ></TextareaAutosize>
                                         <Box
                                             sx={{
                                                 width: '100%',
                                                 display: 'flex',
-                                                justifyContent: 'end'
+                                                justifyContent: 'end',
                                             }}
                                         >
                                             <Button
                                                 onClick={() => {
-                                                    setModeBio(!modeBio)
-                                                    setInpBio(users.bio)
+                                                    setModeBio(!modeBio);
+                                                    setInpBio(users.bio);
                                                 }}
-                                            >Cancel</Button>
-                                            <Button disabled={inpBio === users.bio}
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                disabled={inpBio === users.bio}
                                                 onClick={async () => {
                                                     let Updateuser = { ...users };
                                                     Updateuser.bio = inpBio;
                                                     try {
                                                         await updateUsers(users._id, Updateuser);
-                                                        const user = await getUser(users._id);
-                                                        dispatch(userActions.setUser(user))
+                                                        const user = await getUser(id);
+                                                        dispatch(userActions.setUser(user));
                                                         dispatch(alertActions.setColorGreen());
                                                         dispatch(alertActions.setContentAlert(`Cập nhật thông tin thành công!`));
                                                         dispatch(alertActions.showAlert());
-                                                    }
-                                                    catch (error) {
+                                                    } catch (error) {
                                                         dispatch(alertActions.setColorWrong());
-                                                        dispatch(alertActions.setContentAlert(`Cập nhật thông tin khong thành công!`));
+                                                        dispatch(alertActions.setContentAlert(`Cập nhật thông tin không thành công!`));
                                                         dispatch(alertActions.showAlert());
-                                                    };
-                                                    setModeBio(!modeBio)
+                                                    }
+                                                    setModeBio(!modeBio);
                                                 }}
                                             >
                                                 Save
                                             </Button>
                                         </Box>
                                     </Box>
-                            }
+                                )
+                            ) : null}
+
                             {inpInfomation?.Category && <Box sx={{ display: 'flex', alignItems: 'center' }}> <Category sx={{ color: '#8a939e', marginRight: '10px' }} /><p style={{ fontSize: '15px' }}>{inpInfomation?.Category}</p></Box>}
                             {inpInfomation?.Work && <Box sx={{ display: 'flex', alignItems: 'center' }}> <Work sx={{ color: '#8a939e', marginRight: '10px' }} /><p style={{ fontSize: '15px' }}>{inpInfomation?.Work}</p></Box>}
                             {inpInfomation?.Education && <Box sx={{ display: 'flex', alignItems: 'center' }}> <Education sx={{ color: '#8a939e', marginRight: '10px' }} /><p style={{ fontSize: '15px' }}>{inpInfomation?.Education}</p></Box>}
@@ -373,6 +414,7 @@ export default function Posts() {
                                         width: '90%',
                                         height: '100%'
                                     }}
+                                    onClick={handleCreatePost}
                                 >What are you thinking?</Button>
                             </Box>
 
@@ -397,6 +439,7 @@ export default function Posts() {
                                     justifyContent: 'center',
                                     padding: '8px 0'
                                 }}
+                                onClick={handleCreatePost}
                             >
                                 <PhotoLibraryIcon
                                     sx={{
@@ -450,7 +493,7 @@ export default function Posts() {
                                                         height: '40px',
                                                     }}
                                                 >
-                                                    <AvatarSmall value={users.avatar} size={40} />
+                                                    <AvatarSmall value={authorUser[post.author] ? authorUser[post.author].avatar : ''} size={40} />
                                                 </Box>
                                                 <Box
                                                     sx={{
@@ -459,7 +502,7 @@ export default function Posts() {
                                                         gap: '3px'
                                                     }}
                                                 >
-                                                    <h4>{users.fullname === "" ? users.username : users.fullname}</h4>
+                                                    <h4>{authorUser[post.author] ? authorUser[post.author].fullname || authorUser[post.author].username : ''}</h4>
                                                     <p
                                                         style={{
                                                             color: 'grey',

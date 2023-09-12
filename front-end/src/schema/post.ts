@@ -9,6 +9,7 @@ export interface Actions {
         love: Array<string>,
         haha: Array<string>,
         sad: Array<string>,
+        wow: Array<string>,
     },
     comments: Array<Comment>,
     shares: Array<string>,

@@ -8,7 +8,7 @@ import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { Fragment, useEffect, useState } from "react";
 import Logout from '@mui/icons-material/Logout';
 import Settings from '@mui/icons-material/Settings';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { decodedAT } from "../API/decodedAccessToken/decodedAccessToken.api";
 import { useDispatch, useSelector } from "react-redux";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -28,10 +28,15 @@ import { User } from "../schema/user";
 const Cookies = require('js-cookie');
 
 export default function Profile() {
-
+    
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.user.user)
+    console.log(user);
+    
+    const url = new URL(window.location.href);
+    const searchParams = new URLSearchParams(url.search);
+    const id = searchParams.get('id') || user._id;
     const [users, setUsers] = useState<User | null>(null);
 
     useEffect(() => {
@@ -42,14 +47,14 @@ export default function Profile() {
         else {
             const decoded = async () => {
                 const user = await decodedAT(Cookies.get('jwt'))
-
+                
                 if (user.error === "Invalid Access Token") {
                     Cookies.remove('jwt');
                     navigate('/Login');
                 }
                 else {
-                    const u = await getUser(user.user._id);
-                    dispatch(userActions.setUser(u))
+                    const u = await getUser(id);
+                    dispatch(userActions.setUser(user.user))
                     setUsers(u)
                     dispatch(LoadingActions.hideLoading());
                 }
@@ -78,11 +83,9 @@ export default function Profile() {
         setValue(newValue);
     };
 
-    useEffect(() => {
-        setUsers(user)
-    }, [user])
-
     const handleLoadFileAvatar = (mode: string) => {
+        console.log("hello");
+        
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/*';
@@ -160,7 +163,7 @@ export default function Profile() {
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        width: '20%'
+                                        width: '30%'
                                     }}
                                 >
                                     <img src={logo}
@@ -168,6 +171,7 @@ export default function Profile() {
                                             width: '50px',
                                             height: '50px',
                                         }}
+                                        onClick={() => { window.location.href = "/" }}
                                     />
                                     <OutlinedInput
                                         placeholder="Search on Food Donation"
@@ -196,63 +200,6 @@ export default function Profile() {
                                     />
                                 </Box>
 
-                                <Box
-                                    sx={{
-                                        color: '#868686d6',
-                                        minWidth: '25%',
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <HomeIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                        onClick={() => {
-                                            window.location.href = '/';
-                                        }}
-                                    ></HomeIcon>
-                                    <AddToQueueIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                    ></AddToQueueIcon>
-                                    <GroupWorkIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                    ></GroupWorkIcon>
-                                    <SportsEsportsIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                    ></SportsEsportsIcon>
-                                </Box>
-
                                 <Box>
                                     <Fragment>
                                         <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -265,7 +212,7 @@ export default function Profile() {
                                                     aria-haspopup="true"
                                                     aria-expanded={open ? 'true' : undefined}
                                                 >
-                                                    <AvatarSmall value={users.avatar} size={40} />
+                                                    <AvatarSmall value={user.avatar} size={40} />
                                                 </IconButton>
                                             </Tooltip>
                                         </Box>
@@ -370,8 +317,8 @@ export default function Profile() {
                                             position: 'absolute',
                                             bottom: '20px',
                                             right: '30px',
-                                            zIndex: '1',
-                                            display: 'flex',
+                                            zIndex: '10',
+                                            display: id === user._id ? 'flex' : 'none',
                                             alignItems: 'center',
                                             background: '#6c6a6ac2',
                                             padding: '7px',
@@ -387,7 +334,6 @@ export default function Profile() {
                                         <p
                                             style={{
                                                 marginLeft: '5px',
-
                                             }}
                                         >Add cover photo</p>
                                     </Box>
@@ -421,7 +367,8 @@ export default function Profile() {
                                                 right: '10px',
                                                 background: '#e4e6ea',
                                                 borderRadius: '50%',
-                                                padding: '7px'
+                                                padding: '7px',
+                                                display: id === user._id ? 'flex' : 'none'
                                             }}
                                             onClick={() => {
                                                 handleLoadFileAvatar('Avatar')

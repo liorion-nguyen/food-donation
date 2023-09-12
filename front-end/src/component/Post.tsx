@@ -1,22 +1,30 @@
-import { Box, Grid, LinearProgress, TextareaAutosize } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Dialog, Grid, LinearProgress, Menu, MenuItem, TextareaAutosize } from "@mui/material";
 import AvatarSmall from "./Profile/avatar";
 import SendIcon from '@mui/icons-material/Send';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import LikeTrue from '@mui/icons-material/ThumbUp';
 import CommentFalse from '@mui/icons-material/ChatBubbleOutline';
 import ShareFalse from '@mui/icons-material/IosShare';
 import LikeFalse from '@mui/icons-material/ThumbUpOffAlt';
-import LoveTrue from '@mui/icons-material/Favorite';
-import LoveFalse from '@mui/icons-material/FavoriteBorder';
-import HahaTrue from '@mui/icons-material/EmojiEmotions'
 import { BoxStatusStyle, BoxStyle } from "../StyleComponent/Profile";
 import { Postmanager } from "../schema/post";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { User } from "../schema/user";
-import { getNewFeeds, updatePostmanagers } from "../API/postmanager/postmanager.api";
+import { deletePostmanagers, getNewFeeds, updatePostmanagers } from "../API/postmanager/postmanager.api";
 import { format } from "date-fns";
 import { getUserCommnet } from "../API/user/user.api";
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+
+
+import Haha from "../Images/post/haha.png";
+import Love from "../Images/post/love.png";
+import Sad from "../Images/post/sad.png";
+import Wow from "../Images/post/wow.png";
+import Like from "../Images/post/like.png";
+import { StyleImgIcon, StyleImgIcon2, StyleImgIcon3 } from "../StyleComponent/Post";
+import { DialogHomeActions } from "../store/DialogHome";
+import { alertActions } from "../store/alert";
 
 export default function Post() {
     const dispatch = useDispatch();
@@ -24,6 +32,7 @@ export default function Post() {
     const [users, setUsers] = useState<User | null>(null);
     const [posts, setPosts] = useState<Array<Postmanager> | null>(null)
     const [commentContents, setCommentContents] = useState<{ [key: string]: string }>({});
+    const search = useSelector((state: any) => (state.dataHome.search));
     const [page, setPage] = useState(0)
     const [show, setShow] = useState(20)
 
@@ -41,27 +50,41 @@ export default function Post() {
             time: formattedTime,
         })
         await updatePostmanagers(post._id, post)
-        const newfeed = await getNewFeeds(page === 0 ? 1 : page, show)
+        const newfeed = await getNewFeeds(page === 0 ? 1 : page, show, search)
         setPosts(newfeed.data)
     };
 
     const handleLike = async (status: string, post: Postmanager) => {
-        switch (status) {
-            case 'like':
-                if (post.actions?.likes.like.includes(user._id)) {
-                    const valueToRemove = user._id;
-                    const newArray = post.actions.likes.like.filter(item => item !== valueToRemove);
-                    post.actions.likes.like = newArray;
-                    console.log(post);
+        const selectedAction = status as keyof typeof post.actions.likes;
+        const userLikes: { like: string[]; love: string[]; haha: string[]; sad: string[]; wow: string[]; } = { ...post.actions.likes };
+        const actions: Array<keyof typeof userLikes> = ['like', 'love', 'haha', 'sad', 'wow'];
+        let check = true;
+        actions.forEach((action) => {
+            if (userLikes[action].includes(user._id)) {
+                userLikes[action] = userLikes[action].filter((item) => item !== user._id);
+                if (selectedAction === action) {
+                    check = false;
                 }
-                else {
-                    post.actions.likes.like.push(user._id);
-                }
-                await updatePostmanagers(post._id, post)
-                const newfeed = await getNewFeeds(page === 0 ? 1 : page, show)
-                setPosts(newfeed.data)
+            }
+        });
+        if (check) {
+            userLikes[selectedAction].push(user._id);
         }
+
+        await updatePostmanagers(post._id, { ...post, actions: { ...post.actions, likes: userLikes } });
+        const newfeed = await getNewFeeds(page === 0 ? 1 : page, show, search)
+        setPosts(newfeed.data)
     }
+
+    const [isBoxVisible, setIsBoxVisible] = useState(false);
+
+    const handleBoxStatusHover = () => {
+        setIsBoxVisible(true);
+    };
+
+    const handleBoxStatusLeave = () => {
+        setIsBoxVisible(false);
+    };
 
     const updateCommentContent = (postId: string, newContent: string) => {
         setCommentContents(prevState => ({
@@ -70,7 +93,7 @@ export default function Post() {
         }));
     };
 
-    function formatNumber(num: number) {
+    const formatNumber = (num: number) => {
         if (num >= 1000000) {
             return (num / 1000000).toFixed(1) + 'tr';
         }
@@ -80,7 +103,7 @@ export default function Post() {
         return num.toString();
     }
 
-    function handleTime(time: string) {
+    const handleTime = (time: string) => {
         const moment = require('moment');
         const currentTime = moment();
         const targetTime = moment(time, 'DD/MM/YYYY HH:mm.SSS');
@@ -106,7 +129,7 @@ export default function Post() {
     useEffect(() => {
         setUsers(user);
         const fetchData = async () => {
-            const post = await getNewFeeds(page === 0 ? 1 : page, show);
+            const post = await getNewFeeds(page === 0 ? 1 : page, show, search);
             setPosts(post.data);
         };
         fetchData();
@@ -156,8 +179,35 @@ export default function Post() {
             })
         }
     }, [posts])
-    
-    
+
+    const [open, setOpen] = useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMore = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleCloseMore = () => {
+        setAnchorEl(null);
+    };
+    const handleDelete = async (PostmanagerId: any) => {
+        try {
+            const response = await deletePostmanagers(PostmanagerId);
+            const fetchData = async () => {
+                const dataListPostMangers = await getNewFeeds(page === 0 ? 1 : page, show, search)
+                setPosts(dataListPostMangers.data);
+            };
+            fetchData();
+        } catch (error) {
+            console.error('Error deleting location:', error);
+        }
+    };
     return (
         <>
             {
@@ -165,7 +215,7 @@ export default function Post() {
                     sx={{
                         gap: '20px',
                         width: '100%',
-                        height: '100%',
+                        height: 'auto',
                         display: 'flex',
                         flexDirection: 'column'
                     }}
@@ -215,7 +265,46 @@ export default function Post() {
                                             >{handleTime(post.releaseDate)}</p>
                                         </Box>
                                     </Box>
-                                    <MoreHorizIcon></MoreHorizIcon>
+
+                                    <div>
+                                        <Button
+                                            id="basic-button"
+                                            aria-controls={open ? 'basic-menu' : undefined}
+                                            aria-haspopup="true"
+                                            aria-expanded={open ? 'true' : undefined}
+                                            onClick={handleClick}
+                                        >
+                                            <MoreHorizIcon></MoreHorizIcon>
+                                        </Button>
+                                        <Menu
+                                            id="basic-menu"
+                                            anchorEl={anchorEl}
+                                            open={openMore}
+                                            onClose={handleClose}
+                                            MenuListProps={{
+                                                'aria-labelledby': 'basic-button',
+                                            }}
+                                        >
+                                            <MenuItem onClick={() => {
+                                                handleCloseMore()
+                                                dispatch(DialogHomeActions.showDialog({
+                                                    page: 'Postmanager',
+                                                    mode: 'Update',
+                                                    data: post,
+                                                }));
+                                            }}>Edit</MenuItem>
+                                            <MenuItem onClick={() => {
+                                                handleCloseMore();
+                                                handleDelete(post._id);
+                                                dispatch(alertActions.showAlert());
+                                                dispatch(alertActions.setContentAlert(`Bạn đã xoá Post thành công!`));
+                                                dispatch(alertActions.setColorGreen());
+                                            }}
+                                            >Delete</MenuItem>
+                                            <MenuItem onClick={handleCloseMore}>Details</MenuItem>
+                                        </Menu>
+                                    </div>
+
                                 </Box>
 
                                 <Box>
@@ -230,10 +319,50 @@ export default function Post() {
                                     }}
                                 >
                                     <img src={post.imgTitle}
+                                        onClick={handleOpen}
                                         style={{
                                             width: '100%',
                                         }}
                                     />
+                                    <Dialog
+                                        open={open}
+                                        onClose={handleClose}
+                                        maxWidth={"lg"}
+                                        aria-labelledby="alert-dialog-title"
+                                        aria-describedby="alert-dialog-description"
+                                        sx={{
+                                            width: '100vw',
+                                            height: '100vh'
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                width: '100vw',
+                                                height: '100vh',
+                                                position: 'relative'
+                                            }}
+                                        >
+                                            <img src={post.imgTitle}
+                                                style={{
+                                                    height: '80%',
+                                                    position: 'absolute',
+                                                    bottom: '0'
+                                                }}
+                                            />
+                                            <Box
+                                                sx={{
+                                                    position: 'absolute',
+                                                    top: '0',
+                                                    left: '50%',
+                                                    transform: 'translateX(-50%)',
+                                                    zIndex: 1
+                                                }}
+                                            >
+                                                <ZoomOutIcon />
+                                                <ZoomInIcon />
+                                            </Box>
+                                        </Box>
+                                    </Dialog>
                                 </Box>
 
                                 <Box
@@ -250,10 +379,13 @@ export default function Post() {
                                             alignItems: 'center',
                                         }}
                                     >
-                                        {post.actions?.likes.like.length !== 0 && <LikeTrue sx={{ color: '#58d43b' }} />}
-                                        {post.actions?.likes.love.length !== 0 && <LoveTrue sx={{ color: '#e82323ad' }} />}
-                                        {post.actions?.likes.haha.length !== 0 && <HahaTrue sx={{ color: 'yellow' }} />}
-                                        <p>{formatNumber((post.actions?.likes.like.length || 0) + (post.actions?.likes.love.length || 0) + (post.actions?.likes.haha.length || 0))}</p>
+                                        {post.actions?.likes.like.length !== 0 && <StyleImgIcon3 src={Like} />}
+                                        {post.actions?.likes.love.length !== 0 && <StyleImgIcon3 src={Love} />}
+                                        {post.actions?.likes.haha.length !== 0 && <StyleImgIcon3 src={Haha} />}
+                                        {post.actions?.likes.wow.length !== 0 && <StyleImgIcon3 src={Wow} />}
+                                        {post.actions?.likes.sad.length !== 0 && <StyleImgIcon3 src={Sad} />}
+
+                                        <p>{formatNumber((post.actions?.likes.like.length || 0) + (post.actions?.likes.love.length || 0) + (post.actions?.likes.haha.length || 0) + (post.actions?.likes.wow.length || 0) + (post.actions?.likes.sad.length || 0))}</p>
                                     </Box>
 
                                     <Box
@@ -276,26 +408,85 @@ export default function Post() {
                                     }}
                                 >
                                     <Grid container>
-                                        <Grid item xs={4}>
-                                            <BoxStatusStyle onClick={() => {
-                                                handleLike('like', post)
+                                        <Grid item xs={4}
+                                            sx={{
+                                                position: 'relative'
                                             }}
+                                            onMouseEnter={handleBoxStatusHover}
+                                            onMouseLeave={handleBoxStatusLeave}
+                                        >
+                                            <BoxStatusStyle
+                                                sx={{
+                                                    color: '#58d43b',
+                                                }}
+                                                onClick={() => {
+                                                    const userLikes: { like: string[]; love: string[]; haha: string[]; sad: string[]; wow: string[]; } = { ...post.actions.likes };
+                                                    const actions: Array<keyof typeof userLikes> = ['like', 'love', 'haha', 'sad', 'wow'];
+                                                    let check = true;
+                                                    actions.forEach((action) => {
+                                                        if (userLikes[action].includes(user._id)) {
+                                                            check = false
+                                                            handleLike(action, post);
+                                                        }
+                                                    });
+                                                    if (check) {
+                                                        handleLike('like', post);
+                                                    }
+                                                }}
                                             >
                                                 {post.actions?.likes.like.includes(users._id) ? (
-                                                    <LikeTrue
-                                                        sx={{
-                                                            color: '#58d43b'
-                                                        }}
-                                                    />
+                                                    <><StyleImgIcon2 src={Like} />
+                                                        <p>Like</p></>
                                                 ) : (
-                                                    <LikeFalse />
+                                                    post.actions?.likes.love.includes(users._id) ? (
+                                                        <><StyleImgIcon2 src={Love} />
+                                                            <p>Love</p></>
+                                                    ) : (
+                                                        post.actions?.likes.haha.includes(users._id) ? (
+                                                            <><StyleImgIcon2 src={Haha} />
+                                                                <p>Haha</p></>
+                                                        ) : (
+                                                            post.actions?.likes.wow?.includes(users._id) ? (
+                                                                <><StyleImgIcon2 src={Wow} />
+                                                                    <p>Wow</p></>
+                                                            ) : (
+                                                                post.actions?.likes.sad.includes(users._id) ? (
+                                                                    <><StyleImgIcon2 src={Sad} />
+                                                                        <p>Sad</p></>
+                                                                ) : (
+                                                                    <>
+                                                                        <LikeFalse />
+                                                                        <p style={{ color: 'black' }}>Like</p>
+                                                                    </>
+                                                                )
+                                                            )
+                                                        )
+                                                    )
                                                 )}
-                                                <p
-                                                    style={{
-                                                        color: post.actions?.likes.like.includes(users._id) ? '#58d43b' : ''
-                                                    }}
-                                                >Like</p>
                                             </BoxStatusStyle>
+                                            <Box
+                                                sx={{
+                                                    height: '50px',
+                                                    background: 'white',
+                                                    borderRadius: '30px',
+                                                    boxShadow: 'grey 0 0 10px 2px',
+                                                    position: 'absolute',
+                                                    top: '-100%',
+                                                    left: '50%',
+                                                    transform: 'translateX(-50%)',
+                                                    display: isBoxVisible ? 'flex' : 'none',
+                                                    alignItems: 'center',
+                                                    gap: '10px',
+                                                    padding: '2px 10px',
+                                                }}
+                                                onClick={handleBoxStatusLeave}
+                                            >
+                                                <StyleImgIcon src={Like} onClick={() => { handleLike('like', post) }} />
+                                                <StyleImgIcon src={Love} onClick={() => { handleLike('love', post) }} />
+                                                <StyleImgIcon src={Haha} onClick={() => { handleLike('haha', post) }} />
+                                                <StyleImgIcon src={Wow} onClick={() => { handleLike('wow', post) }} />
+                                                <StyleImgIcon src={Sad} onClick={() => { handleLike('sad', post) }} />
+                                            </Box>
                                         </Grid>
                                         <Grid item xs={4}>
                                             <BoxStatusStyle>
@@ -385,7 +576,11 @@ export default function Post() {
                                                             width: '100%'
                                                         }}
                                                     >
-                                                        <h4>{commentUser[comment.username] && (commentUser[comment.username].fullname || commentUser[comment.username].username)}</h4>
+                                                        <h4
+                                                            onClick={() => {
+                                                                window.location.href = `/Profile?id=${commentUser[comment.username].id}`;
+                                                            }}
+                                                        >{commentUser[comment.username] && (commentUser[comment.username].fullname || commentUser[comment.username].username)}</h4>
                                                         <p>{comment.content}</p>
                                                     </Box>
                                                     <Box

@@ -12,11 +12,16 @@ import { getUser, updateUsers } from '../../API/user/user.api';
 import { alertActions } from '../../store/alert';
 import { userActions } from '../../store/user';
 import Province from './province';
-import { prifileActions } from '../../store/profile';
+import { profileActions } from '../../store/profile';
 import { DateField } from '@mui/x-date-pickers/DateField';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { format } from 'date-fns';
+import { User } from '../../schema/user';
+import { LoadingActions } from '../../store/loading';
+import { useNavigate } from 'react-router-dom';
+import { decodedAT } from '../../API/decodedAccessToken/decodedAccessToken.api';
+const Cookies = require('js-cookie');
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -59,6 +64,7 @@ export default function Introduce() {
     const [value, setValue] = useState(4);
     const user = useSelector((state: any) => state.user.user)
     const [users, setUsers] = useState(user);
+    
 
     const [inpFullname, setInpFullname] = useState(users.fullname)
     const [inpUsername, setInpUsername] = useState(users.username)
@@ -84,10 +90,10 @@ export default function Introduce() {
 
     useEffect(() => {
         setUsers(user)
-        setInpUsername(users.username);
-        setInpContact(users.contact)
-        setInpFullname(users.fullname)
-    }, [user, inpUsername])
+        setInpUsername(user.username)
+        setInpContact(user.contact)
+        setInpFullname(user.fullname)
+    }, [user])
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
@@ -99,8 +105,9 @@ export default function Introduce() {
         Updateuser.username = inpUsername;
         Updateuser.contact = inpContact;
         try {
-            await updateUsers(users._id, Updateuser);
+            await updateUsers(Updateuser._id, Updateuser);
             const user = await getUser(users._id);
+
             dispatch(userActions.setUser(user))
             dispatch(alertActions.setColorGreen());
             dispatch(alertActions.setContentAlert(`Cập nhật thông tin thành công!`));
@@ -300,7 +307,7 @@ export default function Introduce() {
                                                         <option value={'There is a complicated relationship'}>There is a complicated relationship</option>
                                                         <option value={'Registered'}>Registered</option>
                                                         <option value={'Cohabitation'}>Cohabitation</option>
-                                                                 
+
                                                     </NativeSelect>
                                                 </FormControl>
                                                 <BoxStyleTitle
@@ -475,7 +482,6 @@ export default function Introduce() {
                                                 if (inpEducation !== user.information.Education) {
                                                     updatedUser.information = { ...updatedUser.information, Education: inpEducation };
                                                 }
-                                                console.log(updatedUser);
                                                 await updateUsers(user._id, updatedUser);
                                                 const users = await getUser(updatedUser._id);
                                                 dispatch(userActions.setUser(users))
@@ -529,7 +535,7 @@ export default function Introduce() {
                                             </Box>
                                             <BoxStyleTitle
                                                 onClick={() => {
-                                                    dispatch(prifileActions.GetProvince({
+                                                    dispatch(profileActions.GetProvince({
                                                         open: true,
                                                         mode: "live"
                                                     }))
@@ -569,7 +575,7 @@ export default function Introduce() {
                                             </Box>
                                             <BoxStyleTitle
                                                 onClick={() => {
-                                                    dispatch(prifileActions.GetProvince({
+                                                    dispatch(profileActions.GetProvince({
                                                         open: true,
                                                         mode: "countryside"
                                                     }))

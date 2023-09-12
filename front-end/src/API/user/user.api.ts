@@ -20,8 +20,8 @@ export const CheckLogin = async (content: any) => {
     return data;
 };
 
-export const getUsers = async (page: number, show: number) => {
-    const data = await request('get', '', `users?page=${page}&show=${show}`)
+export const getUsers = async (page: number, show: number, search: string) => {
+    const data = await request('get', '', `users?page=${page}&show=${show}&search=${search}`)
     return data;
 };
 
@@ -34,12 +34,6 @@ export const getUserCommnet = async (id: string) => {
     const data = await request('get', '', `users/comment/${id}`)
     return data;
 };
-
-export const getSearchUser = async (content: string) => {
-    const data = await request('get', '', `users/search/${content}`)
-    return data;
-};
-
 
 export const deleteUser = async (content: any) => {
     const data = await request('delete', content, `users/${content}`)

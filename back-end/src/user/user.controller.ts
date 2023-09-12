@@ -33,10 +33,11 @@ export class UserController {
     @Query() pageOption: {
       page?: number,
       show?: number,
-      key?: string,
+      search?: string,
     },
     @Headers('authorization') authorization: string, 
   ): Promise<{ data: User[], count: number }> {
+    
     if (pageOption.page && pageOption.page < 1) {
       throw new BadRequestException('Invalid page number. Page number must be greater than or equal to 1.');
     }
@@ -50,13 +51,6 @@ export class UserController {
     @Param('id') id: string,
   ): Promise<User> {
     return this.userService.getUser(id);
-  }
-
-  @Get('search/:content')
-  async getSearch(
-    @Param('content') content: string
-  ): Promise<User[]> {
-    return this.userService.getSearchUsers(content);
   }
 
   @Get('comment/:id')

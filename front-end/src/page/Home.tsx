@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, CircularProgress, Grid, InputAdornment, OutlinedInput } from "@mui/material";
+import { Avatar, Box, Button, CircularProgress, Dialog, Grid, InputAdornment, OutlinedInput, Snackbar } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
 import SearchIcon from '@mui/icons-material/Search';
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +22,7 @@ import ElementManager from "../component/Manager";
 import { DataHomeActions } from "../store/DataHome";
 
 import Overview from '../Images/home/main/Overview.svg';
-import newFeed from '../Images/home/main/newFeed.svg';
+import newFeed from '../Images/home/main/newFeed.png';
 import Manager from '../Images/home/main/Manager.png';
 import Location from '../Images/home/main/Location.svg';
 import PostManager from '../Images/home/main/PostManager.svg';
@@ -37,18 +37,18 @@ import Error from "../component/Error";
 import { getUser } from "../API/user/user.api";
 import { userActions } from "../store/user";
 import AvatarSmall from "../component/Profile/avatar";
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 
 const Cookies = require('js-cookie');
 
 export default function Home(): JSX.Element {
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const users = useSelector((state: any) => state.user.user)
     useEffect(() => {
         if (users.username) {
-            let extraNavLeft = [ ...navLefts];
+            let extraNavLeft = [...navLefts];
             if (users.orgId.Location && !extraNavLeft.some(navItem => navItem.content === 'Location')) {
                 extraNavLeft.push({
                     icon: Location,
@@ -73,7 +73,7 @@ export default function Home(): JSX.Element {
                     content: "Reward",
                 })
             }
-            if (users.isAdmin && !extraNavLeft.some(navItem => navItem.content === 'Manager')) {      
+            if (users.isAdmin && !extraNavLeft.some(navItem => navItem.content === 'Manager')) {
                 extraNavLeft.push({
                     icon: Manager,
                     content: "Manager",
@@ -82,7 +82,7 @@ export default function Home(): JSX.Element {
             setNavLefts(extraNavLeft)
         }
     }, [users])
-    
+
     const [navLefts, setNavLefts] = useState([
         {
             icon: Overview,
@@ -93,7 +93,7 @@ export default function Home(): JSX.Element {
             content: "NewFeed"
         },
     ])
-    
+
 
     useEffect(() => {
         if (!Cookies.get('jwt') || Cookies.get('jwt') === undefined) {
@@ -130,25 +130,6 @@ export default function Home(): JSX.Element {
 
     }, [window.location.pathname.split('/').pop()])
 
-
-    const sign = useSelector((state: any) => state.sign)
-    function stringToColor(string: string) {
-        let hash = 0;
-        let i;
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-
-        return color;
-    }
-
     const [mouseNavleft, setMouseNavleft] = useState("")
     const [heightWindow, setHeightWindow] = useState(window.innerHeight)
     const keyNavLeft = useSelector((state: any) => state.dataHome.page);
@@ -166,11 +147,31 @@ export default function Home(): JSX.Element {
         Cookies.remove('jwt');
         window.location.reload();
     }
+
+    const [search, setSearch] = useState("");
+
+    const handleChange = async (event: any) => {
+        setSearch(event.target.value);
+        if (event.key === "Enter") {
+            dispatch(DataHomeActions.setSearch(search));
+            await dispatch(DataHomeActions.setPage(''));
+            setTimeout(() => {
+                dispatch(DataHomeActions.setPage(keyNavLeft))
+            }, 1)
+        }
+    }
+
+    useEffect(() => {
+        if (keyNavLeft !== "") {
+            dispatch(DataHomeActions.setSearch(""));
+            setSearch("")
+        }
+    }, [keyNavLeft])
+
     return (
         <Box
             style={{
                 position: 'relative',
-                display: sign.check ? 'block' : 'none'
             }}
         >
             <Box
@@ -306,12 +307,13 @@ export default function Home(): JSX.Element {
                     >
                         <OutlinedInput
                             placeholder="Search a campaign"
-                            startAdornment={<InputAdornment position="start"><SearchIcon
-                                style={{
-                                    fontSize: '30px',
-                                    color: '#353945'
-                                }}
-                            /></InputAdornment>}
+                            startAdornment={<InputAdornment position="start"
+                            ><SearchIcon
+                                    style={{
+                                        fontSize: '30px',
+                                        color: '#353945'
+                                    }}
+                                /></InputAdornment>}
                             sx={{
                                 width: {
                                     xs: '90%',
@@ -325,6 +327,8 @@ export default function Home(): JSX.Element {
                                     border: 'none',
                                 },
                             }}
+                            value={search}
+                            onChange={handleChange} onKeyUp={handleChange}
                         />
 
                         <Fragment>
@@ -378,17 +382,20 @@ export default function Home(): JSX.Element {
                                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                             >
                                 <MenuItem onClick={() => {
-                                    window.location.href = "/Profile"
+                                    window.location.href = `/Profile?id=${users._id}`;
                                     handleClose();
                                 }}>
-                                    <AvatarSmall value={users.avatar} size={40} /> Profile
+                                    <AvatarSmall value={users.avatar} size={40} /> {users.fullname}
                                 </MenuItem>
                                 <Divider />
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={()=> {
+                                    window.location.href = `/MessageAI`;
+                                    handleClose();
+                                }}>
                                     <ListItemIcon>
-                                        <Settings fontSize="small" />
+                                        <ChatBubbleOutlineIcon fontSize="small" />
                                     </ListItemIcon>
-                                    Settings
+                                    Message
                                 </MenuItem>
                                 <MenuItem onClick={handleOut}>
                                     <ListItemIcon>

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const prifileSlice = createSlice({
+const profileSlice = createSlice({
     name: 'prifile',
     initialState: 
         {
@@ -15,9 +15,9 @@ const prifileSlice = createSlice({
                 ...state,
                 province: actions.payload,
             }
-        }
+        },
 
     }
 });
-export const prifileActions = prifileSlice.actions;
-export default prifileSlice.reducer;
+export const profileActions = profileSlice.actions;
+export default profileSlice.reducer;

@@ -29,6 +29,7 @@ export class PostmanagerController {
         @Query() pageOption: {
             page?: number,
             show?: number,
+            search?: string,
         }
     ): Promise<{ data: Postmanager[], count: number }> {
         if (pageOption.page && pageOption.page < 1) {

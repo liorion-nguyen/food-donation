@@ -1,7 +1,7 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { Button, IconButton, Snackbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/storage';
@@ -13,6 +13,11 @@ import Login from './page/Login';
 
 import Logo from './Images/home/main/Logo.svg'
 import Profile from './page/Profile';
+import { MessageAI } from './page/MessageAI';
+import { decodedAT } from './API/decodedAccessToken/decodedAccessToken.api';
+import { DataHomeActions } from './store/DataHome';
+import { getUser } from './API/user/user.api';
+import { userActions } from './store/user';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL1I5MSnhqc4DiMDQI6BaO94LL6HBL4J0",
@@ -27,9 +32,11 @@ const firebaseConfig = {
 
 // Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
+const Cookies = require('js-cookie');
 
 function App(): JSX.Element {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const alert = useSelector((state: any) => state.alert)
 
   const handleClose = (event: any, reason: string) => {
@@ -65,6 +72,24 @@ function App(): JSX.Element {
   link.id = 'icon';
 
   document.head.appendChild(link);
+
+  useEffect(() => {
+    const decoded = async () => {
+      const use = await decodedAT(Cookies.get('jwt'))
+
+      if (use.error === "Invalid Access Token") {
+        Cookies.remove('jwt');
+      }
+      else {
+        dispatch(DataHomeActions.getUser())
+        const u = await getUser(use.user._id);
+        dispatch(userActions.setUser(u))
+      }
+
+    }
+    decoded();
+  }, [Cookies.get('jwt')])
+
   return (
     <div className="App">
       <Routes>
@@ -81,8 +106,12 @@ function App(): JSX.Element {
           element={<SignUp />}
         />
         <Route
-          path="Profile"
+          path="/Profile"
           element={<Profile />}
+        />
+        <Route
+          path="/MessageAI"
+          element={<MessageAI />}
         />
         <Route
           path="*"
