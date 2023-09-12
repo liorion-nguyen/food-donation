@@ -64,7 +64,6 @@ export default function Introduce() {
     const [value, setValue] = useState(4);
     const user = useSelector((state: any) => state.user.user)
     const [users, setUsers] = useState(user);
-    console.log(user);
     
 
     const [inpFullname, setInpFullname] = useState(users.fullname)

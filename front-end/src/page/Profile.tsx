@@ -83,8 +83,9 @@ export default function Profile() {
         setValue(newValue);
     };
 
-    function handleLoadFileAvatar(mode: string) {
+    const handleLoadFileAvatar = (mode: string) => {
         console.log("hello");
+        
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/*';
@@ -162,7 +163,7 @@ export default function Profile() {
                                     sx={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        width: '20%'
+                                        width: '30%'
                                     }}
                                 >
                                     <img src={logo}
@@ -170,6 +171,7 @@ export default function Profile() {
                                             width: '50px',
                                             height: '50px',
                                         }}
+                                        onClick={() => { window.location.href = "/" }}
                                     />
                                     <OutlinedInput
                                         placeholder="Search on Food Donation"
@@ -196,63 +198,6 @@ export default function Profile() {
                                             },
                                         }}
                                     />
-                                </Box>
-
-                                <Box
-                                    sx={{
-                                        color: '#868686d6',
-                                        minWidth: '25%',
-                                        display: 'flex',
-                                        alignItems: 'center'
-                                    }}
-                                >
-                                    <HomeIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                        onClick={() => {
-                                            window.location.href = '/';
-                                        }}
-                                    ></HomeIcon>
-                                    <AddToQueueIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                    ></AddToQueueIcon>
-                                    <GroupWorkIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                    ></GroupWorkIcon>
-                                    <SportsEsportsIcon
-                                        sx={{
-                                            fontSize: '32px',
-                                            padding: '10px 40px',
-                                            borderRadius: '10px',
-                                            backgroundColor: 'transparent',
-                                            ':hover': {
-                                                background: '#f0f0f0',
-                                            }
-                                        }}
-                                    ></SportsEsportsIcon>
                                 </Box>
 
                                 <Box>
@@ -372,7 +317,7 @@ export default function Profile() {
                                             position: 'absolute',
                                             bottom: '20px',
                                             right: '30px',
-                                            zIndex: '1',
+                                            zIndex: '10',
                                             display: id === user._id ? 'flex' : 'none',
                                             alignItems: 'center',
                                             background: '#6c6a6ac2',
@@ -389,7 +334,6 @@ export default function Profile() {
                                         <p
                                             style={{
                                                 marginLeft: '5px',
-
                                             }}
                                         >Add cover photo</p>
                                     </Box>

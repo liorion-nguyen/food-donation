@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Dialog, Grid, LinearProgress, TextareaAutosize } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress, Dialog, Grid, LinearProgress, Menu, MenuItem, TextareaAutosize } from "@mui/material";
 import AvatarSmall from "./Profile/avatar";
 import SendIcon from '@mui/icons-material/Send';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -10,7 +10,7 @@ import { Postmanager } from "../schema/post";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { User } from "../schema/user";
-import { getNewFeeds, updatePostmanagers } from "../API/postmanager/postmanager.api";
+import { deletePostmanagers, getNewFeeds, updatePostmanagers } from "../API/postmanager/postmanager.api";
 import { format } from "date-fns";
 import { getUserCommnet } from "../API/user/user.api";
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
@@ -23,6 +23,8 @@ import Sad from "../Images/post/sad.png";
 import Wow from "../Images/post/wow.png";
 import Like from "../Images/post/like.png";
 import { StyleImgIcon, StyleImgIcon2, StyleImgIcon3 } from "../StyleComponent/Post";
+import { DialogHomeActions } from "../store/DialogHome";
+import { alertActions } from "../store/alert";
 
 export default function Post() {
     const dispatch = useDispatch();
@@ -186,7 +188,26 @@ export default function Post() {
         setOpen(true);
     };
 
-
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const openMore = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleCloseMore = () => {
+        setAnchorEl(null);
+    };
+    const handleDelete = async (PostmanagerId: any) => {
+        try {
+            const response = await deletePostmanagers(PostmanagerId);
+            const fetchData = async () => {
+                const dataListPostMangers = await getNewFeeds(page === 0 ? 1 : page, show, search)
+                setPosts(dataListPostMangers.data);
+            };
+            fetchData();
+        } catch (error) {
+            console.error('Error deleting location:', error);
+        }
+    };
     return (
         <>
             {
@@ -244,7 +265,46 @@ export default function Post() {
                                             >{handleTime(post.releaseDate)}</p>
                                         </Box>
                                     </Box>
-                                    <MoreHorizIcon></MoreHorizIcon>
+
+                                    <div>
+                                        <Button
+                                            id="basic-button"
+                                            aria-controls={open ? 'basic-menu' : undefined}
+                                            aria-haspopup="true"
+                                            aria-expanded={open ? 'true' : undefined}
+                                            onClick={handleClick}
+                                        >
+                                            <MoreHorizIcon></MoreHorizIcon>
+                                        </Button>
+                                        <Menu
+                                            id="basic-menu"
+                                            anchorEl={anchorEl}
+                                            open={openMore}
+                                            onClose={handleClose}
+                                            MenuListProps={{
+                                                'aria-labelledby': 'basic-button',
+                                            }}
+                                        >
+                                            <MenuItem onClick={() => {
+                                                handleCloseMore()
+                                                dispatch(DialogHomeActions.showDialog({
+                                                    page: 'Postmanager',
+                                                    mode: 'Update',
+                                                    data: post,
+                                                }));
+                                            }}>Edit</MenuItem>
+                                            <MenuItem onClick={() => {
+                                                handleCloseMore();
+                                                handleDelete(post._id);
+                                                dispatch(alertActions.showAlert());
+                                                dispatch(alertActions.setContentAlert(`Bạn đã xoá Post thành công!`));
+                                                dispatch(alertActions.setColorGreen());
+                                            }}
+                                            >Delete</MenuItem>
+                                            <MenuItem onClick={handleCloseMore}>Details</MenuItem>
+                                        </Menu>
+                                    </div>
+
                                 </Box>
 
                                 <Box>
@@ -282,7 +342,7 @@ export default function Post() {
                                                 position: 'relative'
                                             }}
                                         >
-                                            <img src={post.imgTitle} 
+                                            <img src={post.imgTitle}
                                                 style={{
                                                     height: '80%',
                                                     position: 'absolute',
@@ -517,7 +577,7 @@ export default function Post() {
                                                         }}
                                                     >
                                                         <h4
-                                                            onClick={()=> {
+                                                            onClick={() => {
                                                                 window.location.href = `/Profile?id=${commentUser[comment.username].id}`;
                                                             }}
                                                         >{commentUser[comment.username] && (commentUser[comment.username].fullname || commentUser[comment.username].username)}</h4>

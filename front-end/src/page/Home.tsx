@@ -22,7 +22,7 @@ import ElementManager from "../component/Manager";
 import { DataHomeActions } from "../store/DataHome";
 
 import Overview from '../Images/home/main/Overview.svg';
-import newFeed from '../Images/home/main/newFeed.svg';
+import newFeed from '../Images/home/main/newFeed.png';
 import Manager from '../Images/home/main/Manager.png';
 import Location from '../Images/home/main/Location.svg';
 import PostManager from '../Images/home/main/PostManager.svg';
@@ -37,6 +37,7 @@ import Error from "../component/Error";
 import { getUser } from "../API/user/user.api";
 import { userActions } from "../store/user";
 import AvatarSmall from "../component/Profile/avatar";
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
 
 const Cookies = require('js-cookie');
@@ -384,14 +385,17 @@ export default function Home(): JSX.Element {
                                     window.location.href = `/Profile?id=${users._id}`;
                                     handleClose();
                                 }}>
-                                    <AvatarSmall value={users.avatar} size={40} /> Profile
+                                    <AvatarSmall value={users.avatar} size={40} /> {users.fullname}
                                 </MenuItem>
                                 <Divider />
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={()=> {
+                                    window.location.href = `/MessageAI`;
+                                    handleClose();
+                                }}>
                                     <ListItemIcon>
-                                        <Settings fontSize="small" />
+                                        <ChatBubbleOutlineIcon fontSize="small" />
                                     </ListItemIcon>
-                                    Settings
+                                    Message
                                 </MenuItem>
                                 <MenuItem onClick={handleOut}>
                                     <ListItemIcon>

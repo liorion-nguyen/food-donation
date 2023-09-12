@@ -86,8 +86,8 @@ export class UserService {
     }
 
     async getUserComment(id: string): Promise<{ fullname: string; avatar: string; id: string; username: string }> {
-        const user = await this.userModel.findById(id, 'fullname avatar id username').exec();
-
+        const user = await this.userModel.findById(id, 'fullname avatar _id username').exec();
+        
         if (!user) {
             throw new NotFoundException('User not found.');
         }
@@ -95,8 +95,8 @@ export class UserService {
         return {
             fullname: user.fullname,
             avatar: user.avatar,
-            id: user.id,
-            username: user.username,
+            id: user._id.toString(),
+            username: user.username, 
         };
     }
 

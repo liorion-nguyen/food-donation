@@ -12,6 +12,8 @@ import { PaymentrecordModule } from './paymentrecord/paymentrecord.module';
 import { DecryptAccesstokenModule } from './decrypt-accesstoken/decrypt-accesstoken.module';
 import { ConfirmEmailModule } from './confirm-email/confirm-email.module';
 import { AbilityModule } from './user/ability/ability.module';
+import { MessageAIModule } from './messageAI/messageAI.module';
+import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
   imports: [
@@ -29,9 +31,10 @@ import { AbilityModule } from './user/ability/ability.module';
     DecryptAccesstokenModule,
     ConfirmEmailModule,
     AbilityModule,
+    MessageAIModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ChatGateway],
 
 })
 

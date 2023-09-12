@@ -10,7 +10,7 @@ const AvatarSmall: React.FC<AvatarSmallProps> = ({ value, size }) => {
             width: `${size}px`,
             height: `${size}px`,
             objectFit: 'cover',
-            borderRadius: '50%'
+            borderRadius: '50%',
         }} />
 };
 

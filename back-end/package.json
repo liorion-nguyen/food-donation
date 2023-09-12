@@ -27,9 +27,12 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/mongoose": "^10.0.0",
     "@nestjs/passport": "^10.0.0",
-    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-express": "^10.2.5",
+    "@nestjs/platform-socket.io": "^10.2.5",
     "@nestjs/schedule": "^3.0.2",
+    "@nestjs/websockets": "^10.2.5",
     "@types/bcrypt": "^5.0.0",
+    "axios": "^1.5.0",
     "bcrypt": "^5.1.0",
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
@@ -40,9 +43,12 @@
     "mongodb": "^5.7.0",
     "mongoose": "^7.3.4",
     "nodemailer": "^6.9.4",
+    "openai": "^4.6.0",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
