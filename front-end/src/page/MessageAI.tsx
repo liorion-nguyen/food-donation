@@ -151,7 +151,7 @@ export function MessageAI() {
     const keyNavLeft = useSelector((state: any) => state.dataHome.page);
     const [open, setOpen] = useState(false);
     const [inpMess, setInpMess] = useState("");
-    const [conversations, setConversations] = useState<Message[]>([]);
+    const [conversations, setConversations] = useState<Message[] | null>(null);
     const [loading, setLoading] = useState(true)
     const [chat, setChat] = useState<Message[]>([]);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -169,8 +169,6 @@ export function MessageAI() {
             content: "NewFeed"
         },
     ])
-
-
 
     const copyToClipboard = async (content: string) => {
         try {
@@ -195,7 +193,6 @@ export function MessageAI() {
     }
     const handleSend = (e: any, content: string) => {
         e.preventDefault();
-        socket.emit('chat', conversations);
         if (!authorUser[user._id]) {
             setAuthortUser(prevState => ({
                 ...prevState,
@@ -210,7 +207,13 @@ export function MessageAI() {
         setInpMess("");
         const createMessage = async (content: string) => {
             await createMessageAI({ author: user._id, content: content })
-            if (content.length > 0) {
+            if (conversations !== null && Array.isArray(conversations)) {
+                socket.emit('chat', [...conversations, { author: user._id, content: content }]);
+            } else {
+                socket.emit('chat', [{ author: user._id, content: content }]);
+            }
+
+            if (content.length > 0 && conversations) {
                 const newConversations = [...conversations, { author: user._id, content: content }];
                 setConversations(newConversations);
             }
@@ -224,6 +227,41 @@ export function MessageAI() {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    useEffect(() => {
+        if (conversations) {
+            setLoading(false)
+        } else {
+            const fetchMessages = async () => {
+                try {
+                    const response = await getMessageAI();
+                    const uniqueAuthors = new Set();
+
+                    response.data.forEach((item: any) => {
+                        uniqueAuthors.add(item.author);
+                    });
+                    const uniqueAuthorArray = Array.from(uniqueAuthors);
+                    uniqueAuthorArray.map((uni) => {
+                        const fetch = async (uni: any) => {
+                            if (uni) {
+                                const Uni_User = await getUserCommnet(uni);
+                                setAuthortUser(prevState => ({
+                                    ...prevState,
+                                    [Uni_User.id]: Uni_User,
+                                }));
+                            }
+                        }
+                        fetch(uni);
+                    })
+                    setConversations(response.data);
+                    setLoading(false)
+                } catch (error) {
+                    console.error('Error fetching messages:', error);
+                }
+            };
+            fetchMessages();
+        }
+    }, [conversations])
 
     const handleDelete = async (id: string) => {
         await deleteMessageAI(id);
@@ -268,7 +306,6 @@ export function MessageAI() {
         const moment = require('moment');
         const currentTime = moment();
         const targetTime = moment(time, 'YYYY/MM/DD HH:mm.SSS');
-        console.log(targetTime);
 
         const duration = moment.duration(currentTime.diff(targetTime));
 
@@ -298,55 +335,30 @@ export function MessageAI() {
         }
     }, [user])
 
-    useEffect(() => {
-        if (!Cookies.get('jwt') || Cookies.get('jwt') === undefined) {
-            navigate('/Login');
-        }
-        else {
-            const decoded = async () => {
-                const use = await decodedAT(Cookies.get('jwt'))
+    // useEffect(() => {
+    //     if (!Cookies.get('jwt') || Cookies.get('jwt') === undefined) {
+    //         navigate('/Login');
+    //     }
+    //     else {
+    //         const decoded = async () => {
+    //             const use = await decodedAT(Cookies.get('jwt'))
 
-                if (use.error === "Invalid Access Token") {
-                    Cookies.remove('jwt');
-                    navigate('/Login');
-                }
-            }
-            decoded();
-        }
-    }, [Cookies.get('jwt')])
+    //             if (use.error === "Invalid Access Token") {
+    //                 Cookies.remove('jwt');
+    //                 navigate('/Login');
+    //             }
+    //         }
+    //         decoded();
+    //     }
+    // }, [Cookies.get('jwt')])
 
     useEffect(() => {
         socket.on('chat', (conversations) => {
+            console.log(conversations);
+
+            setConversations(conversations);
             setChat(conversations);
         });
-        const fetchMessages = async () => {
-            try {
-                const response = await getMessageAI();
-                const uniqueAuthors = new Set();
-
-                response.data.forEach((item: any) => {
-                    uniqueAuthors.add(item.author);
-                });
-                const uniqueAuthorArray = Array.from(uniqueAuthors);
-                uniqueAuthorArray.map((uni) => {
-                    const fetch = async (uni: any) => {
-                        if (uni) {
-                            const Uni_User = await getUserCommnet(uni);
-                            setAuthortUser(prevState => ({
-                                ...prevState,
-                                [Uni_User.id]: Uni_User,
-                            }));
-                        }
-                    }
-                    fetch(uni);
-                })
-                setConversations(response.data);
-                setLoading(false)
-            } catch (error) {
-                console.error('Error fetching messages:', error);
-            }
-        };
-        fetchMessages();
     }, [chat]);
 
     useEffect(() => {
@@ -625,7 +637,7 @@ export function MessageAI() {
                                     }}
                                 >
                                     {
-                                        conversations.map((conversation, index) => (
+                                        conversations && conversations.map((conversation, index) => (
                                             <Box
                                                 key={index}
                                                 className={
