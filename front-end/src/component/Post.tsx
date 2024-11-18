@@ -246,6 +246,7 @@ export default function Post() {
                                                 width: '40px',
                                                 height: '40px',
                                             }}
+                                            onClick={() => window.location.href = `/Profile?id=${authorUser[post.author].id}`}
                                         >
                                             <AvatarSmall value={authorUser[post.author] ? authorUser[post.author].avatar : ''} size={40} />
                                         </Box>
@@ -256,7 +257,9 @@ export default function Post() {
                                                 gap: '3px'
                                             }}
                                         >
-                                            <h4>{authorUser[post.author] ? authorUser[post.author].fullname || authorUser[post.author].username : ''}</h4>
+                                            <h4
+                                                onClick={() => window.location.href = `/Profile?id=${authorUser[post.author].id}`}
+                                            >{authorUser[post.author] ? authorUser[post.author].fullname || authorUser[post.author].username : ''}</h4>
                                             <p
                                                 style={{
                                                     color: 'grey',
